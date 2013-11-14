@@ -39,7 +39,7 @@ if( strcmp( tmp_A_C_DIRS, 'Rx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
   port_label( 'output', 3, 'pos.L' );
   port_label( 'output', 4, 'error' );
   if( strcmp( get_param( gcb, 'DAISY_CHAINING'), 'on') )
-    port_label( 'output', 4, 'handle' );
+    port_label( 'output', 5, 'handle' );
   end
 end
 %===========================================================     MASK PARAMETERS

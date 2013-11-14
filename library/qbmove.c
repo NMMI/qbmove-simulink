@@ -241,6 +241,7 @@ static void mdlInitializeSizes( SimStruct *S )
 //===================================================================	  others
 
 	ssSetOptions(S, SS_OPTION_ALLOW_INPUT_SCALAR_EXPANSION);
+	//ssSetOptions(S, SS_OPTION_CALL_TERMINATE_ON_EXIT);
 	
 //=======================================================	  mask modifications
 
@@ -457,7 +458,7 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 #if defined(MDL_UPDATE)
 static void mdlUpdate( SimStruct *S, int_T tid )
 {
-	double	 aux;
+	double	 auxa, auxb;
 	int16_T	 refs[2];					 				// auxiliary value
 	uint8_T  qbot_id;			 				// qbot id's
 	int16_T  ref_a, ref_b;		 				// reference values (16 bits)
@@ -493,26 +494,46 @@ static void mdlUpdate( SimStruct *S, int_T tid )
 // - check minimum and maximum limits
 // - finish conversion to a 16 bits word
 
-////////////////////////////////   reference A	 ///////////////////////////////
-		aux = in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i];
-////////////////////////////////   adding offset to eq.pos. only	////////////
+// ////////////////////////////////   reference A	 ///////////////////////////////
+// 		aux = in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i];
+// ////////////////////////////////   adding offset to eq.pos. only	////////////
+// 
+// 		refs[0]  = (int16_T)( aux );
+// 		
+// //====================================================================		TODO
+// //														  Insert here the use of
+// //														  params_sw_lim_range
+// //														  and
+// //														  params_joint_offset.
+// 
+// ////////////////////////////////   reference B	 ///////////////////////////////
+// 
+// 		aux = in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i];
+// 		ref_b = (int16_T)( aux );
+// 		refs[1] = (int16_T)( aux );
+// 
+//         commSetInputs(&comm_settings_t, qbot_id, refs);
+        
+        switch( params_qbot_mode )
+      	{
+      		case PRIME_MOVERS_POS:
+        		auxa = in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i];
+        		auxb = in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i];
+      			break;
+      		case EQ_POS_AND_PRESET:
+    		
+    		auxa = in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] +
+    		            in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i];
+    		auxb = in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] -
+    		            in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i];
 
-		refs[0]  = (int16_T)( aux );
-		
-//====================================================================		TODO
-//														  Insert here the use of
-//														  params_sw_lim_range
-//														  and
-//														  params_joint_offset.
+      			break;
+      	}
 
-////////////////////////////////   reference B	 ///////////////////////////////
-
-		aux = in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i];
-		ref_b = (int16_T)( aux );
-		refs[1] = (int16_T)( aux );
+		refs[0]  = (int16_T)( auxa );
+		refs[1] = (int16_T)( auxb );
 
         commSetInputs(&comm_settings_t, qbot_id, refs);
-
 	}
 }
 #endif /* MDL_UPDATE */
@@ -526,6 +547,16 @@ static void mdlUpdate( SimStruct *S, int_T tid )
 
 static void mdlTerminate( SimStruct *S )
 {
+	// printf("Dentro mdlTerminate\n");
+	// comm_settings comm_settings_t;
+	// int i;
+
+	// RS485InitCommSettings(&comm_settings_t);
+ //    comm_settings_t.file_handle = in_handle;
+
+ //    for(i = 0; i < NUM_OF_QBOTS; i++) {
+	// 	commActivate(&comm_settings_t, params_qbot_id(i), 0);
+	// }
 }
 
 //==============================================================================

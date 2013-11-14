@@ -48,6 +48,7 @@
 //==============================================================================
 
 #include "simstruc.h"
+#include <unistd.h>
 #include "qbmoveAPI/qbmove_communications.h"
 // #include <windows.h>
 
@@ -166,7 +167,7 @@ static void mdlStart(SimStruct *S)
     // sprintf(string_aux, "%s", string_aux);
 
         // sprintf(string_aux, serial_port_path, param_com_port(15));
-
+    
     openRS485(&comm_settings_t, serial_port_path);
     pwork_handle = comm_settings_t.file_handle;
          // = openRS485(string_aux);
@@ -179,9 +180,11 @@ static void mdlStart(SimStruct *S)
          // sprintf(string_aux, "Check you COM port.");
          // MessageBox(0, string_aux, "Error: cannot connect!", MB_OK);
          // CloseHandle(pwork_handle);
-            ssPrintf("Check you COM port.\n Could not connect to %s\n", serial_port_path);
+            ssPrintf("Check you COM port.\n Could not connect to %s Try number: %d\n", serial_port_path, i);
          out_handle = &pwork_handle;         
          return;
+         //sleep(1);
+    
         }
                 
 	out_handle = &pwork_handle;
