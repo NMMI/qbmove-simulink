@@ -1,34 +1,23 @@
-Model {
-  Name			  "current_example"
+Library {
+  Name			  "qbmove_library"
   Version		  7.6
   MdlSubVersion		  0
-  GraphicalInterface {
-    NumRootInports	    0
-    NumRootOutports	    0
-    ParameterArgumentNames  ""
-    ComputedModelVersion    "1.2"
-    NumModelReferences	    0
-    NumTestPointedSignals   0
-  }
-  SavedCharacterEncoding  "US-ASCII"
+  SavedCharacterEncoding  "windows-1252"
+  LibraryType		  "BlockLibrary"
   SaveDefaultBlockParams  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
-  DataTypeOverride	  "UseLocalSettings"
-  DataTypeOverrideAppliesTo "AllNumericTypes"
-  MinMaxOverflowLogging	  "UseLocalSettings"
-  MinMaxOverflowArchiveMode "Overwrite"
   MaxMDLFileLineLength	  120
-  Created		  "Thu Jul 25 16:30:33 2013"
-  Creator		  "felipe"
+  Created		  "Tue Oct 25 15:33:49 2011"
+  Creator		  "Administrator"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "felipe"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu Jul 25 17:10:29 2013"
-  RTWModifiedTimeStamp	  296673027
-  ModelVersionFormat	  "1.%<AutoIncrement:2>"
+  LastModifiedDate	  "Thu Jul 25 17:02:57 2013"
+  RTWModifiedTimeStamp	  296672574
+  ModelVersionFormat	  "1.%<AutoIncrement:43>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -56,12 +45,7 @@ Model {
   LinearizationMsg	  "none"
   Profile		  off
   ParamWorkspaceSource	  "MATLABWorkspace"
-  AccelSystemTargetFile	  "accel.tlc"
-  AccelTemplateMakefile	  "accel_default_tmf"
-  AccelMakeCommand	  "make_rtw"
-  TryForcingSFcnDF	  off
   RecordCoverage	  off
-  CovPath		  "/"
   CovSaveName		  "covdata"
   CovMetricSettings	  "dw"
   CovNameIncrementing	  off
@@ -69,7 +53,6 @@ Model {
   CovForceBlockReductionOff on
   covSaveCumulativeToWorkspaceVar on
   CovSaveSingleToWorkspaceVar on
-  CovCumulativeVarName	  "covCumulativeData"
   CovCumulativeReport	  off
   CovReportOnPause	  on
   CovModelRefEnable	  "Off"
@@ -95,7 +78,6 @@ Model {
   ExtModeSkipDownloadWhenConnect off
   ExtModeLogAll		  on
   ExtModeAutoUpdateStatusClock on
-  BufferReuse		  on
   ShowModelReferenceBlockVersion off
   ShowModelReferenceBlockIO off
   Array {
@@ -106,7 +88,7 @@ Model {
       Version		      "1.10.0"
       Array {
 	Type			"Handle"
-	Dimension		8
+	Dimension		9
 	Simulink.SolverCC {
 	  $ObjectID		  2
 	  Version		  "1.10.0"
@@ -574,17 +556,19 @@ Model {
 	    PropName		    "Components"
 	  }
 	}
+	hdlcoderui.hdlcc {
+	  $ObjectID		  12
+	  Version		  "1.10.0"
+	  Description		  "HDL Coder custom configuration component"
+	  Name			  "HDL Coder"
+	}
 	PropName		"Components"
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    " [ 360, 124, 1240, 754 ] "
+      ConfigPrmDlgPosition    " [ 280, 124, 1160, 754 ] "
     }
     PropName		    "ConfigurationSets"
-  }
-  Simulink.ConfigSet {
-    $PropName		    "ActiveConfigurationSet"
-    $ObjectID		    1
   }
   BlockDefaults {
     ForegroundColor	    "black"
@@ -619,21 +603,6 @@ Model {
   }
   BlockParameterDefaults {
     Block {
-      BlockType		      Display
-      Format		      "short"
-      Decimation	      "10"
-      Floating		      off
-      SampleTime	      "-1"
-    }
-    Block {
-      BlockType		      Mux
-      Inputs		      "4"
-      DisplayOption	      "none"
-      UseBusObject	      off
-      BusObject		      "BusObject"
-      NonVirtualBus	      off
-    }
-    Block {
       BlockType		      "S-Function"
       FunctionName	      "system"
       SFunctionModules	      "''"
@@ -642,8 +611,8 @@ Model {
     }
   }
   System {
-    Name		    "current_example"
-    Location		    [537, 293, 1117, 553]
+    Name		    "qbmove_library"
+    Location		    [402, 490, 769, 709]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -655,45 +624,15 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "80"
+    ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "8"
-    Block {
-      BlockType		      Display
-      Name		      "Elapsed Real Time"
-      SID		      "2"
-      Ports		      [1]
-      Position		      [150, 200, 240, 230]
-      ShowName		      off
-      Decimation	      "2"
-      Lockdown		      off
-    }
-    Block {
-      BlockType		      Display
-      Name		      "Elapsed Real Time1"
-      SID		      "6"
-      Ports		      [1]
-      Position		      [330, 35, 420, 95]
-      ShowName		      off
-      Decimation	      "2"
-      Lockdown		      off
-    }
-    Block {
-      BlockType		      Mux
-      Name		      "Mux"
-      SID		      "7"
-      Ports		      [2, 1]
-      Position		      [300, 46, 305, 84]
-      ShowName		      off
-      Inputs		      "2"
-      DisplayOption	      "bar"
-    }
+    SIDHighWatermark	    "14"
     Block {
       BlockType		      "S-Function"
       Name		      "QB Move - Get Current"
-      SID		      "5"
+      SID		      "14"
       Ports		      [1, 2]
-      Position		      [165, 43, 275, 87]
+      Position		      [30, 118, 140, 162]
       DropShadow	      on
       AncestorBlock	      "qbmove_library/qbmove"
       LibraryVersion	      "1.37"
@@ -721,60 +660,71 @@ Model {
       MaskTabNameString	      "Options,Options,Options"
     }
     Block {
-      BlockType		      Reference
-      Name		      "QB Pacer"
-      SID		      "3"
-      Ports		      [0, 1]
-      Position		      [55, 203, 125, 227]
-      BackgroundColor	      "yellow"
+      BlockType		      "S-Function"
+      Name		      "Qb Move"
+      SID		      "11"
+      Ports		      [3, 4]
+      Position		      [190, 52, 295, 153]
       DropShadow	      on
-      LibraryVersion	      "1.11"
-      SourceBlock	      "QB_pacer_lib/QB Pacer"
-      SourceType	      "RealTime_Pacer"
-      simTimePerRealTime      "1"
+      AncestorBlock	      "qbmove_library/qbmove"
+      LibraryVersion	      "1.37"
+      FunctionName	      "qbmove"
+      Parameters	      "ID, ACTIVE_COMM_DIRECTIONS, CONTROL_MODE, DAISY_CHAINING, MAX_ANG, SW_LIMIT, OFFSET"
+      EnableBusSupport	      off
+      MaskType		      "qb move"
+      MaskDescription	      "This block provides a interface to the Qb Move.\nIt needs an handle from Qb Move Init blo"
+      "ck.\n"
+      MaskPromptString	      "ID|Communication Directions|Input Type|Daisy Chaining Enable|Angle Range|Software Limita"
+      "tion of the Equilibrium Position Range|Offset to the Equilibrium Position"
+      MaskStyleString	      "edit,popup(Rx|Tx|Both|None),popup(Prime Movers Positions|Equilibrium Position and Stiffne"
+      "ss Preset),checkbox,edit,edit,edit"
+      MaskVariables	      "ID=@1;ACTIVE_COMM_DIRECTIONS=@2;CONTROL_MODE=@3;DAISY_CHAINING=@4;MAX_ANG=@5;SW_LIMIT=@6;OF"
+      "FSET=@7;"
+      MaskTunableValueString  "on,on,on,off,on,off,off"
+      MaskCallbackString      "||||||"
+      MaskEnableString	      "on,on,on,on,off,off,off"
+      MaskVisibilityString    "on,on,off,off,off,off,off"
+      MaskToolTipString	      "on,on,on,on,on,on,on"
+      MaskInitialization      "\n\n"
+      MaskDisplay	      "qbmoveMaskDrawing"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "65|Both|Prime Movers Positions|off|0|inf|0"
+      MaskTabNameString	      "Options,Options,Options,Options,Options,Options,Options"
     }
     Block {
-      BlockType		      Reference
+      BlockType		      "S-Function"
       Name		      "Qb Move Init"
-      SID		      "1"
+      SID		      "13"
       Ports		      [0, 1]
-      Position		      [60, 53, 140, 77]
+      Position		      [30, 58, 110, 82]
       DropShadow	      on
       NamePlacement	      "alternate"
-      LibraryVersion	      "1.43"
-      SourceBlock	      "qbmove_library/Qb Move Init"
-      SourceType	      "qb Init - ISS"
-      NUMBER_OF_COM	      "'/dev/tty.usbserial-DAWQ5P42'"
-    }
-    Line {
-      SrcBlock		      "QB Pacer"
-      SrcPort		      1
-      DstBlock		      "Elapsed Real Time"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Qb Move Init"
-      SrcPort		      1
-      DstBlock		      "QB Move - Get Current"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Mux"
-      SrcPort		      1
-      DstBlock		      "Elapsed Real Time1"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "QB Move - Get Current"
-      SrcPort		      1
-      DstBlock		      "Mux"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "QB Move - Get Current"
-      SrcPort		      2
-      DstBlock		      "Mux"
-      DstPort		      2
+      AncestorBlock	      "qbmove_library/Qb Move Init"
+      LibraryVersion	      "1.41"
+      FunctionName	      "qbmoveInit"
+      Parameters	      "double(NUMBER_OF_COM), 115200"
+      EnableBusSupport	      off
+      MaskType		      "qb Init - ISS"
+      MaskDescription	      "qb devices initialization block."
+      MaskPromptString	      "USB-ISS Virtual COM port number"
+      MaskStyleString	      "edit"
+      MaskVariables	      "NUMBER_OF_COM=@1;"
+      MaskTunableValueString  "off"
+      MaskEnableString	      "on"
+      MaskVisibilityString    "on"
+      MaskToolTipString	      "on"
+      MaskDisplay	      "% image( imread('bridge.jpg') )\nport_label( 'output', 1, 'handle' );"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "'COM1'"
+      MaskTabNameString	      "Serial Port Configuration"
     }
   }
 }

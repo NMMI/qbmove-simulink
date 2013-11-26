@@ -1,3 +1,3 @@
-mex qbmoveInit.c qbmoveAPI/qbmove_communications.c
-mex qbmove.c qbmoveAPI/qbmove_communications.c
-mex qbcurrent.c qbmoveAPI/qbmove_communications.c
+mex qbmoveInit.cpp qbmoveAPI/qbmove_communications.cpp
+mex qbmove.cpp qbmoveAPI/qbmove_communications.cpp
+mex qbcurrent.cpp qbmoveAPI/qbmove_communications.cpp

@@ -1,3 +1,0 @@
-[submodule "library/qbmoveAPI"]
-	path = library/qbmoveAPI
-	url = git@server.qbrobotics.com:/var/git/qbmoveAPI
