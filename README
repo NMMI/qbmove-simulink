@@ -20,6 +20,9 @@ Compile the library
 3)  On the Matlab Command Window type "make" and press return. If no error
     is returned the libraries are correctly compiled.
 
+NOTE: you do not necessary need to recompile the library. Actually it is
+precompiled under Windows 7 64bit and MacOS X Maveriks.
+
 
 
 Use:
@@ -29,10 +32,13 @@ Create a new simulink model
     Command Window.
 2)  Create a new model using: "File -> New -> Model"
 3)  In the new model go to: "Simulation -> Model Configuration Parameters".
-    Under "Solver" select as Type "Fixed-Step", as Solver "ode1 (Euler)",
-    and as Fixed-step size type the delta_t in seconds. (e.g. if you want
-    to retrieve positions and set new inputs every 5 milliseconds, type
-    0.005). Click "OK"
+    Under "Solver" select as Type "Fixed-Step", as Solver "ode1 (Euler)" or
+    "discrete (no continuous states)" and as Fixed-step size type the
+    delta_t in seconds. (e.g. if you want to retrieve positions and set new
+    inputs every 5 milliseconds, type 0.005). Click "OK".
+    NOTE: Every qbvmove needs at least 1 millisecond to read and set new
+    positions, so the minimum step time allowed is 1 millisecond multiplied
+    by the number of qbmove in the chain.
 4)  You should be able to see "QB Pacer" and "Qb Move Library" under
     libraries in Simulink Library Browser. From here drag and drop the
     desired blocks onto your model.
@@ -69,20 +75,20 @@ The blocks:
         Go under "Ports (COM & LPT)", right-click on the COM# associated
         with your QB Move and open "Properties".
         Select the tab "Port Settings" and click on "Advanced...".
-        Be sure to set a port number which is 1, 2, 3 or 4 and a "Latency"
+        Be sure to set a port number within 1, 2, 3 or 4 and a "Latency"
         of 1 millisecond. Click "OK" and "OK" again.
         Now you can come back to your simulink model, double-click on the
         QB Move Init block and type the port you choose between single
         quote mark (e.g. 'COM1')
         
-    - UNIX
+    - UNIX or MAC
         Under unix you do not need to make any special modification to
         your port.
         To retrieve the name of the port you need to open a Terminal
         window and type "ls /dev/"
         You shoul see a series of interfaces:
          - MAC OS X: the interface is usually called "tty.usbserial-XX"
-           where XX is the ID of the QB Move
+           where XX is the serial of the QB Move
          - LINUX: the interface is usually called "tty.USB0" or similar
         Now you can come back to your simulink model, double-click on the
         QB Move Init block and type the port name between single quote

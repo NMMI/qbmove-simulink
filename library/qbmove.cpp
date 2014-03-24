@@ -23,8 +23,14 @@
 //==============================================================================
 
 #include "simstruc.h"
+//#include <unistd.h>
 #include "qbmoveAPI/qbmove_communications.h"
-// #include <windows.h>
+
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+	#define sleep(x) Sleep(1000 * (x))
+    #define usleep(x) Sleep((x) / 1000)
+#endif
 
 //==============================================================================
 //																	 definitions
@@ -67,7 +73,7 @@
 #define BUFFER_SIZES 			15
 #define ANG_TO_DEG  			720.0/65536.0
 #define DEG_TO_ANG				65536.0/720.0
-#define MAX_STIFF               3000
+#define MAX_STIFF               4000
 #define MAX_POS                 15000
                                      
 //=============================================================		enumerations
@@ -187,7 +193,7 @@ static void mdlInitializeSizes( SimStruct *S )
 		}
 		else
 		{
-	  if (!ssSetNumOutputPorts(S, 0)) return;
+            if (!ssSetNumOutputPorts(S, 0)) return;
 		}
 	}
 
@@ -357,7 +363,9 @@ static void mdlInitializeSampleTimes( SimStruct *S )
 #if		defined(MDL_START)
 static void mdlStart( SimStruct *S )
 {
-    int i;
+    int i, j;
+    int try_counter;
+    char aux_char;
     comm_settings comm_settings_t;    
     
 //=============================		should an output handle appear in the block?
@@ -367,7 +375,7 @@ static void mdlStart( SimStruct *S )
 //======================================	 should initialization be evaluated?
 
     #if defined(_WIN32) || defined(_WIN64)
-        if(in_handle == INVALID_HANDLE_VALUE) return;	 
+        if(in_handle == INVALID_HANDLE_VALUE) return;
     #else
         if(in_handle == -1) return;
     #endif
@@ -377,8 +385,23 @@ static void mdlStart( SimStruct *S )
 
 	for(i = 0; i < NUM_OF_QBOTS; i++)
 	{
-        commActivate(&comm_settings_t, params_qbot_id(i), 3);
-        out_debug[i] = 0;
+		aux_char = 0x00;
+		printf("Activating cube ID %d: ", (int)params_qbot_id(i));
+
+		for (try_counter = 0; try_counter < 5; try_counter++) {
+			printf("%d ", (try_counter + 1));
+	        commActivate(&comm_settings_t, params_qbot_id(i), 3);
+	        commGetActivate(&comm_settings_t, params_qbot_id(i), &aux_char);
+	        if (aux_char == 0x03) {
+	        	printf("DONE\n");
+	        	break;
+	        } else {
+	        	usleep(10000);
+	        }
+	    }
+	    if (aux_char != 0x03) {
+	    	printf("Unable to activate\n");
+	    }
     }
 
 }
@@ -574,16 +597,35 @@ static void mdlUpdate( SimStruct *S, int_T tid )
 
 static void mdlTerminate( SimStruct *S )
 {
-	// printf("Dentro mdlTerminate\n");
-	// comm_settings comm_settings_t;
-	// int i;
+	char aux_char;
+	int try_counter;
+	int i;
+	comm_settings comm_settings_t;
 
-	// RS485InitCommSettings(&comm_settings_t);
- //    comm_settings_t.file_handle = in_handle;
+	comm_settings_t.file_handle = in_handle;
 
- //    for(i = 0; i < NUM_OF_QBOTS; i++) {
-	// 	commActivate(&comm_settings_t, params_qbot_id(i), 0);
-	// }
+	for(i = 0; i < NUM_OF_QBOTS; i++)
+	{
+		aux_char = 0x03;
+		printf("Deactivating cube ID %d: ", (int)params_qbot_id(i));
+
+		for (try_counter = 0; try_counter < 5; try_counter++) {
+			printf("%d ", (try_counter + 1));
+	        commActivate(&comm_settings_t, (int)params_qbot_id(i), 0);
+	        commGetActivate(&comm_settings_t, (int)params_qbot_id(i), &aux_char);
+	        if (aux_char == 0x00) {
+	        	printf("DONE\n");
+	        	break;
+	        } else {
+	        	usleep(10000);
+	        }
+	    }
+	    if (aux_char != 0x00) {
+	    	printf("Unable to deactivate\n");
+	    }
+    }
+
+    closeRS485(&comm_settings_t);
 }
 
 //==============================================================================

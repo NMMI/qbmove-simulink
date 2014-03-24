@@ -215,10 +215,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 static void mdlTerminate(SimStruct *S)
 {
-    comm_settings comm_settings_t;
-    comm_settings_t.file_handle = pwork_handle;
+    //comm_settings comm_settings_t;
+    //comm_settings_t.file_handle = pwork_handle;
 
-    closeRS485(&comm_settings_t);
+    //closeRS485(&comm_settings_t);
 }
 
 //==============================================================================
