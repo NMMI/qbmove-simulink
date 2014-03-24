@@ -23,13 +23,16 @@
 //==============================================================================
 
 #include "simstruc.h"
-//#include <unistd.h>
 #include "qbmoveAPI/qbmove_communications.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
 	#define sleep(x) Sleep(1000 * (x))
     #define usleep(x) Sleep((x) / 1000)
+#endif
+
+#if !(defined(_WIN32) || defined(_WIN64))
+    #include <unistd.h>
 #endif
 
 //==============================================================================

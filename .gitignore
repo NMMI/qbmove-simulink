@@ -35,3 +35,8 @@ library/slprj/sim/_sharedutils/shared_file.slddc
 library/slprj/sim/_sharedutils/tflSUInfo.mat
 library/slprj/sim/qb_arm/tmwinternal/minfo.mat
 library/slprj/sl_proj.tmw
+library/bin/qbcurrent.mexmaci64
+library/bin/qbcurrent.mexw64
+library/bin/qbmove.mexw64
+library/bin/qbmoveInit.mexmaci64
+library/bin/qbmoveInit.mexw64
