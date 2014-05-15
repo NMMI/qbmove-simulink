@@ -184,7 +184,9 @@ static void mdlStart(SimStruct *S)
          // MessageBox(0, string_aux, "Error: cannot connect!", MB_OK);
          // CloseHandle(pwork_handle);
             ssPrintf("Check you COM port.\n Could not connect to %s Try number: %d\n", serial_port_path, i);
-         out_handle = &pwork_handle;         
+         out_handle = &pwork_handle;
+         mexEvalString("set_param(bdroot, 'SimulationCommand', 'stop')" );
+         
          return;
          //sleep(1);
     

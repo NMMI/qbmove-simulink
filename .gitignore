@@ -40,3 +40,10 @@ library/bin/qbcurrent.mexw64
 library/bin/qbmove.mexw64
 library/bin/qbmoveInit.mexmaci64
 library/bin/qbmoveInit.mexw64
+library/slprj/modeladvisor/qbmove__library/geninfo.mat
+library/slprj/modeladvisor/qbmove__library/mdladvinfo.mat
+library/slprj/modeladvisor/qbmove__library/model_diagnose.html
+library/slprj/modeladvisor/qbmove__library/model_diagnose_custom.html
+library/slprj/modeladvisor/qbmove__library/model_diagnose_left.html
+library/slprj/modeladvisor/qbmove__library/model_diagnose_task.html
+library/slprj/modeladvisor/qbmove__library/report.html

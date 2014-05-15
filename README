@@ -61,6 +61,7 @@ The blocks:
     Communication Direction. If you set Tx, you will be able to only send
     new reference input to the qbmove. If you set Rx you will be able to
     only read the the position sensors value.
+    Either the inputs and the outputs are in degrees.
     NOTE: to use this block you MUST have a "QB Move Init" block connected
     to the first input (handle).
 
