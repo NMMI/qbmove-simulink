@@ -23,7 +23,7 @@
 //==============================================================================
 
 #include "simstruc.h"
-#include "qbmoveAPI/qbmove_communications.h"
+#include "../../qbmoveAPI/src/qbmove_communications.h"
 // #include <windows.h>
 
 //==============================================================================
