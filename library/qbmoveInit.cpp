@@ -48,7 +48,7 @@
 //==============================================================================
 
 #include "simstruc.h"
-#include "../../qbmoveAPI/src/qbmove_communications.h"
+#include "../../qbAPI/src/qbmove_communications.h"
 // #include <windows.h>
 
 #if !(defined(_WIN32) || defined(_WIN64))
