@@ -49,6 +49,9 @@
 
 #include "simstruc.h"
 #include "../../qbAPI/src/qbmove_communications.h"
+
+#include "mex.h" //cancellare
+
 // #include <windows.h>
 
 #if !(defined(_WIN32) || defined(_WIN64))
@@ -58,6 +61,22 @@
 //==============================================================================
 //                                                                   definitions
 //==============================================================================
+
+//===============================================================     baud rate
+
+#if (defined(_WIN32) || defined(_WIN64))
+    #define BAUD_RATE_57600     CBR_57600 
+    #define BAUD_RATE_115200    CBR_115200          ///< Virtual COM baud rate - WINDOWS
+    #define BAUD_RATE_460800    460800              ///< Virtual COM baud rate - WINDOWS
+#elif (defined(__APPLE__))
+    #define BAUD_RATE_57600     57600 
+    #define BAUD_RATE_115200    115200              ///< Virtual COM baud rate 
+    #define BAUD_RATE_460800    460800              ///< Virtual COM baud rate 
+#else
+    #define BAUD_RATE_57600     B57600 
+    #define BAUD_RATE_115200    B115200              
+    #define BAUD_RATE_460800    B460800              ///< Virtual COM baud rate - UNIX
+#endif
 
 //===============================================================     parameters
 
@@ -156,6 +175,7 @@ static void mdlStart(SimStruct *S)
 		char 	serial_port_path[255];				// auxiliar string
         int i = 0;
         comm_settings comm_settings_t;
+        DWORD baud_rate;
         
 	//======================================================     opening serial port
 
@@ -170,8 +190,26 @@ static void mdlStart(SimStruct *S)
     // sprintf(string_aux, "%s", string_aux);
 
         // sprintf(string_aux, serial_port_path, param_com_port(15));
+        
+    switch(param_com_baudrate){
     
-    openRS485(&comm_settings_t, serial_port_path);
+        case 1:
+            baud_rate = BAUD_RATE_460800;
+            break;
+            
+        case 2:
+            baud_rate = BAUD_RATE_115200;
+            break;
+            
+        case 3:
+            baud_rate = BAUD_RATE_57600;
+            break;
+            
+    }    
+    
+    mexPrintf("baud: %d \n", baud_rate);
+    
+    openRS485(&comm_settings_t, serial_port_path, baud_rate);
     pwork_handle = comm_settings_t.file_handle;
          // = openRS485(string_aux);
         #if defined(_WIN32) || defined(_WIN64)
@@ -183,7 +221,7 @@ static void mdlStart(SimStruct *S)
          // sprintf(string_aux, "Check you COM port.");
          // MessageBox(0, string_aux, "Error: cannot connect!", MB_OK);
          // CloseHandle(pwork_handle);
-            ssPrintf("Check you COM port.\n Could not connect to %s Try number: %d\n", serial_port_path, i);
+         ssPrintf("Check your COM port.\n Could not connect to %s Try number: %d\n", serial_port_path, i);
          out_handle = &pwork_handle;
          mexEvalString("set_param(bdroot, 'SimulationCommand', 'stop')" );
          
