@@ -175,7 +175,7 @@ static void mdlStart(SimStruct *S)
 		char 	serial_port_path[255];				// auxiliar string
         int i = 0;
         comm_settings comm_settings_t;
-        DWORD baud_rate;
+        int baud_rate;
         
 	//======================================================     opening serial port
 
