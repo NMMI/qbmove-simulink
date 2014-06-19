@@ -2,9 +2,10 @@ Library {
   Name			  "qbmove_library"
   Version		  8.1
   MdlSubVersion		  0
-  SavedCharacterEncoding  "US-ASCII"
+  SavedCharacterEncoding  "windows-1252"
   LibraryType		  "BlockLibrary"
   SaveDefaultBlockParams  on
+  LockLinksToLibrary	  on
   ScopeRefreshTime	  0.035000
   OverrideScopeRefreshTime on
   DisableAllScopes	  off
@@ -19,7 +20,7 @@ Library {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [2205.0, 68.0, 407.0, 397.0]
+      Location		      [317.0, 129.0, 637.0, 518.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -28,7 +29,7 @@ Library {
 	DockPosition		"Left"
 	Width			[50]
 	Height			[50]
-	Filter			[8]
+	Filter			[9]
       }
       Object {
 	$PropName		"ExplorerBarInfo"
@@ -43,7 +44,7 @@ Library {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[373.0, 238.0]
+	Extents			[587.0, 352.0]
 	ZoomFactor		[1.0]
 	Offset			[0.0, 0.0]
       }
@@ -53,11 +54,11 @@ Library {
   Creator		  "Administrator"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "laurentio"
+  LastModifiedBy	  "Marco"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Nov 18 20:15:07 2013"
-  RTWModifiedTimeStamp	  306682553
-  ModelVersionFormat	  "1.%<AutoIncrement:43>"
+  LastModifiedDate	  "Wed Jun 18 17:52:51 2014"
+  RTWModifiedTimeStamp	  325014769
+  ModelVersionFormat	  "1.%<AutoIncrement:50>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -709,8 +710,8 @@ Library {
   }
   System {
     Name		    "qbmove_library"
-    Location		    [2205, 68, 2612, 465]
-    Open		    off
+    Location		    [317, 129, 954, 647]
+    Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
     ScreenColor		    "white"
@@ -902,13 +903,13 @@ Library {
       SID		      "13"
       Ports		      [0, 1]
       Position		      [30, 58, 110, 82]
-      ZOrder		      -3
+      ZOrder		      2
       DropShadow	      on
       NamePlacement	      "alternate"
       AncestorBlock	      "qbmove_library/Qb Move Init"
-      LibraryVersion	      "1.41"
+      LibraryVersion	      "*1.43"
       FunctionName	      "qbmoveInit"
-      Parameters	      "double(NUMBER_OF_COM), 115200"
+      Parameters	      "double(NUMBER_OF_COM), double(BAUD_RATE_COM)"
       EnableBusSupport	      off
       Object {
 	$PropName		"MaskObject"
@@ -917,16 +918,36 @@ Library {
 	Type			"qb Init - ISS"
 	Description		"qb devices initialization block."
 	Display			"% image( imread('bridge.jpg') )\nport_label( 'output', 1, 'handle' );"
-	Object {
-	  $PropName		  "Parameters"
-	  $ObjectID		  31
-	  $ClassName		  "Simulink.MaskParameter"
-	  Type			  "edit"
-	  Name			  "NUMBER_OF_COM"
-	  Prompt		  "USB-ISS Virtual COM port number"
-	  Value			  "'COM1'"
-	  Tunable		  "off"
-	  TabName		  "Serial Port Configuration"
+	Array {
+	  Type			  "Simulink.MaskParameter"
+	  Dimension		  2
+	  Object {
+	    $ObjectID		    31
+	    Type		    "edit"
+	    Name		    "NUMBER_OF_COM"
+	    Prompt		    "USB-ISS Virtual COM port number"
+	    Value		    "'COM1'"
+	    Tunable		    "off"
+	    TabName		    "Serial Port Configuration"
+	  }
+	  Object {
+	    $ObjectID		    32
+	    Type		    "popup"
+	    Array {
+	      Type		      "Cell"
+	      Dimension		      3
+	      Cell		      "460800"
+	      Cell		      "115200"
+	      Cell		      "57600"
+	      PropName		      "TypeOptions"
+	    }
+	    Name		    "BAUD_RATE_COM"
+	    Prompt		    "Virtual COM Baud Rate"
+	    Value		    "460800"
+	    Tunable		    "off"
+	    TabName		    "Serial Port Configuration"
+	  }
+	  PropName		  "Parameters"
 	}
       }
     }
