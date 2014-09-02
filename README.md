@@ -1,21 +1,34 @@
-Installation:
+# qbmove simulink library
 
-The compiler
-1)  First of all be sure to have installed a C compiler in your system
+## Installation:
+
+### The compiler
+
+1.  First of all be sure to have installed a C compiler in your system
     (tested with Xcode under Mac OS X and Microsoft Windows SDK for
     Windows 7 under Windows).
-2)  Now execute the command "mex -setup" on your Matlab Command Window
+2.  Now execute the command "mex -setup" on your Matlab Command Window
     to let Matlab use your compiler.
 
-Include the library
-1)  In Matlab go to "Set Path", click on "Add with subfolders" and include
-    the folder qbmove_simulink on your Matlab paths.
-2)  Click "Save", then "Close".
+    If you have trouble in this step, try follow
+    [this](http://www.mathworks.it/it/help/matlab/matlab_external/what-you-need-to-build-mex-files.html) link.
 
-Compile the library
-1)  The library can be used on varius operating systems such as MacOS X,
-    Windows, Linux... so you have to recompile it for your system.
-2)  Navigate in the folder and make sure to have the "Current Folder" set
+### Include the library
+
+1.  In Matlab go to "Set Path", click on "Add with subfolders" and include
+    the folder `qbmove_simulink` on your Matlab paths.
+2.  Click "Save", then "Close".
+3.  Navigate to the `qbmove_simulink` folder and execute `install.m` which is
+    a script that simply choose the proper library version based on your Matlab
+    version and rename it subtracting the YEAR extension.
+    e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
+
+
+### Compile the library
+
+1.  The library can be used on varius operating systems such as MacOS X,
+    Windows, Linux... so you probably have to recompile it for your system.
+2.  Navigate in the folder and make sure to have the "Current Folder" set
     to "library".
 3)  On the Matlab Command Window type "make" and press return. If no error
     is returned the libraries are correctly compiled.
