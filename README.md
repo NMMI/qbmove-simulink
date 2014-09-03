@@ -20,17 +20,18 @@
 2.  Click "Save", then "Close".
 3.  Navigate to the `qbmove_simulink` folder and execute `install.m` which is
     a script that simply choose the proper library version based on your Matlab
-    version and rename it subtracting the YEAR extension.
+    version and rename it subtracting the YEAR extension.  
     e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
 
 
 ### Compile the library
 
-1.  The library can be used on varius operating systems such as MacOS X,
-    Windows, Linux... so you probably have to recompile it for your system.
-2.  Navigate in the folder and make sure to have the "Current Folder" set
-    to "library".
-3)  On the Matlab Command Window type "make" and press return. If no error
+The library can be used on varius operating systems such as MacOS X,
+Windows, Linux... so you need to recompile it for your system.
+
+#continua qui
+1.  Navigate in the folder `library`. 
+2.  On the Matlab Command Window type "make" and press return. If no error
     is returned the libraries are correctly compiled.
 
 NOTE: you do not necessary need to recompile the library. Actually it is
