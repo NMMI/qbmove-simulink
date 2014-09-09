@@ -84,6 +84,9 @@ Windows, Linux... so you need to recompile it for your system.
     > To use multiple qbmoves, just put an array containing the IDs in the ID
     > field and use a `mux` to send multiple inputs to the *eq. pos* and
     > *s. preset* ports.
+    
+    > ID 0 is broadcast ID so if you want to move a qbmove you do not know the
+    > current ID, just use 0
 
 - QB Move Init
 
