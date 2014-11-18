@@ -4,7 +4,7 @@
 
 ### The compiler
 
-1.  First of all be sure to have installed a C compiler in your system
+1.  First of all be sure to have a C compiler installed in your system
     (tested with Xcode under Mac OS X and Microsoft Windows SDK for
     Windows 7 under Windows).
 2.  Now execute the command "mex -setup" on your Matlab Command Window
@@ -13,16 +13,6 @@
     If you have trouble in this step, try follow
     [this](http://www.mathworks.it/it/help/matlab/matlab_external/what-you-need-to-build-mex-files.html)
     link.
-
-### Include the library
-
-1.  In Matlab go to "Set Path", click on "Add with subfolders" and include
-    the folder `qbmove_simulink` on your Matlab paths.
-2.  Click "Save", then "Close".
-3.  Navigate to the `qbmove_simulink` folder and execute `install.m` which is
-    a script that simply choose the proper library version based on your Matlab
-    version and rename it subtracting the YEAR extension.  
-    e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
 
 
 ### Compile the library
@@ -35,6 +25,18 @@ Windows, Linux... so you need to recompile it for your system.
     is returned the libraries are correctly compiled.
 
 
+### Include the library
+
+1.  In Matlab go to "Set Path", click on "Add with subfolders" and include
+    the folder `qbmove_simulink` on your Matlab paths.
+2.  Click "Save", then "Close".
+3.  Navigate to the `qbmove_simulink` folder and execute `install.m` which is
+    a script that simply choose the proper library version based on your Matlab
+    version and rename it subtracting the YEAR extension.  
+    e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
+
+> NOTE: include the library after compiling so that the folder `bin` which is
+created during compiling is added too, otherwise you will need to add it again.
 
 ## Use
 
@@ -61,7 +63,7 @@ Windows, Linux... so you need to recompile it for your system.
 
 - QB Pacer
     You need one of this block to be in your model, otherwise the
-    simulation time will not match the *pseudo real time*.
+    simulation time will not match the *real time*.
     You can set a number representing the **simulation time** **real time**
     ratio. Leave it set to 1 for normal use.
 
@@ -91,7 +93,7 @@ Windows, Linux... so you need to recompile it for your system.
 - QB Move Init
 
     This block is used to provide the right handle to the other blocks
-    and allow the communication between the computer and the qbmoves.
+    and allows the communication between the computer and the qbmoves.
 
     + WINDOWS
 
@@ -138,7 +140,7 @@ In the main folder you will find an example called "qbmove_example.slx"
 This is a simple configuration which you can use to test your qbmove.
 On the left there are two slider gain which can be tweaked while the
 simulation is running and you can see the result on the qbmove.
-On the right there are 3 display where you can read the value in degree of
+On the right there are 3 displays where you can read the value in degree of
 the 3 sensors (1 and 2 are the motor shafts, 3 is the qbmove output shaft).
 The ouput error can be used to see if there are errors in communication.
 It starts from zero and it is incremented by 1 every time a communication error
@@ -149,10 +151,10 @@ If you want, you can use the output of this block to trace the time of the
 simulation.
 
 > If you take a look at the scope you can observe two lines. One is the
-> simulation clock and the other one is the reat lime pacer output.
+> simulation clock and the other one is the real time pacer output.
 > If they overlap, the sample time of the simulation is properly choosen,
-> this means that the simulation is "slow" enough to let the communication
-> finish between one step and the following step.
+> this means that the step size is big enough to let the communication
+> finish between two consecutive steps.
 
 In this particular configuration, the step size is set to 2 milliseconds
 and the computer should be able to run it in real time. This means that
