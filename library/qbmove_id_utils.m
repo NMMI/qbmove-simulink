@@ -51,6 +51,11 @@ function qbmove_id_utils_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to qbmove_id_utils (see VARARGIN)
+a = '';
+b = '';
+c = '';
+d = '';
+e = '';
 
 [a, b, c, d, e] = c_gui_utils(0,1,'');
 s = {a, b, c, d, e};
