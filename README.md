@@ -3,7 +3,7 @@
 ### IMPORTANT: Versioning:
 From now on, each of the repositories in this table will have a version number composed
 by 3 numbers in this form **v x.y.z**
-The current version is a #define in commands.h
+The current version is a #define in definitions.h
 
 |  Tools          |  Libraries |  Firmware                |
 |-----------------|------------|--------------------------|
