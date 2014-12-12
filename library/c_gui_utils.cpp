@@ -1,10 +1,10 @@
-#include <unistd.h>
-
 #include "mex.h"
 #include "../../qbAPI/src/qbmove_communications.h"
 #include "matrix.h"
 
-
+#if !(defined(_WIN32) || defined(_WIN64))
+    #include <unistd.h>
+#endif
 
 #define BROADCAST_ID 0
 
