@@ -1,24 +1,22 @@
 # qbmove simulink library
 
 ### IMPORTANT: Versioning:
-From now on, each of the repositories in this table will have a version number composed
-by 3 numbers in this form **v x.y.z**
-The current version is a #define in definitions.h
+Each of the repositories in the following table has a version number
+composed of 3 numbers in the form: **v x.y.z**
 
-|  Tools          |  Libraries |  Firmware                |
-|-----------------|------------|--------------------------|
-| qbmove simulink | qbAPI      | qbmove firmware          |
-| qbmoveadmin     |            | qbmove advanced firmware |
-| handmoveadmin   |            | hand firmware micro      |
+|  Tools  [T]    |  Libraries [L] |  Firmware [F]            |
+|-----------------|---------------|--------------------------|
+| qbmove simulink | qbAPI         | qbmove firmware          |
+| qbmoveadmin     |               | qbmove advanced firmware |
+| handmoveadmin   |               | hand firmware micro      |
 
-I will use **x, y, z** followed by **T, L, F** when talking about respectively Tools, Libraries or Firmware repositories.
-E.g. **xT** will be the the number **x** of the Tools whereas **yF** will be the **y** number of the Firmware version.
+E.g. **xT** is the **x** number of the Tools whereas **yF** is the **y** number of the Firmware version.
 
-- Every change in the number **z** means a changement in the respective repo which not implies changements in other repos.
-- Every change in the number **y** in a repo is backward compatibile reading the table from right to left. This means that
-if you have some new feature in a Firmware, you can still use old Libraries and Tools for management, but of coruse
+- Every change in the number **z** means a change in the respective repo which not implies changes in other repos.
+- Every change in the number **y** in a repo is backward compatible reading the table from right to left. This means that
+if you have some new feature in a Firmware, you can still use old Libraries and Tools for management, but of course
 you will not be able to use the new features. In this case the rule is **yF >= yL >= yT**.
-- Every change in the number **x** means a changement which is not backward compatibile, hence you will need to update
+- Every change in the number **x** means a change which is not backward compatible, hence you will need to update
 everything to use it. In this case the rule is **xF = xL = xT**.
 
 Summarising
@@ -49,13 +47,12 @@ E.g.
     [this](http://www.mathworks.it/it/help/matlab/matlab_external/what-you-need-to-build-mex-files.html)
     link.
 
-
 ### Compile the library
 
-The library can be used on varius operating systems such as MacOS X,
-Windows, Linux... so you need to recompile it for your system.
+The library can be used on various operating systems such as MacOS X,
+Windows, Linux... but you need to recompile it for your system.
 
-1.  Navigate in the folder `library`. 
+1.  Navigate in the folder `library`.
 2.  On the Matlab Command Window type "make" and press return. If no error
     is returned the libraries are correctly compiled.
 
@@ -65,19 +62,19 @@ Windows, Linux... so you need to recompile it for your system.
 1.  In Matlab go to "Set Path", click on "Add with subfolders" and include
     the folder `qbmove_simulink` on your Matlab paths.
 2.  Click "Save", then "Close".
-3.  Navigate to the `qbmove_simulink` folder and execute `install.m` which is
-    a script that simply choose the proper library version based on your Matlab
-    version and rename it subtracting the YEAR extension.  
+3.  Navigate to the `qbmove_simulink` folder and execute `install.m`. This is
+    a simple script that simply choose the proper library version based on your Matlab
+    version and rename it subtracting the YEAR extension.
     e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
 
-> NOTE: include the library after compiling so that the folder `bin` which is
+> NOTE: add the library to matlab path after compiling so that the folder `bin` which is
 created during compiling is added too, otherwise you will need to add it again.
 
 ## Use
 
 ### Create a new simulink model
 
-1.  Click on the "Simulink Library" icon or type "Simulink" in the Matlab
+1.  Click on the "Simulink Library" icon or type "simulink" in the Matlab
     Command Window.
 2.  Create a new model using: "File -> New -> Model"
 3.  In the new model go to: "Simulation -> Model Configuration Parameters".
@@ -121,7 +118,7 @@ created during compiling is added too, otherwise you will need to add it again.
     > To use multiple qbmoves, just put an array containing the IDs in the ID
     > field and use a `mux` to send multiple inputs to the *eq. pos* and
     > *s. preset* ports.
-    
+
     > ID 0 is broadcast ID so if you want to move a qbmove you do not know the
     > current ID, just use 0
 
@@ -138,17 +135,17 @@ created during compiling is added too, otherwise you will need to add it again.
         > If your qbmove is not automatically recognized by windows, try to
         > manually install the FTDI drivers from [here](http://www.ftdichip.com/Drivers/VCP.htm)
 
-        You need to modify some paramters to allow the a proper communication.
-        Click on START and type Device Manageer.
-        Go under "Ports (COM & LPT)", right-click on the COM# associated
-        with your qbmove and open "Properties".
-        Select the tab "Port Settings" and click on "Advanced...".
-        Be sure to set a port number within 1, 2, 3 or 4 and a "Latency"
-        of 1 millisecond. Click "OK" and "OK" again.
+        You need to modify the port number to allow simulink using it.
+        Click on START and type Device Manager.
+        Go under `Ports (COM & LPT)`, right-click on the COM# associated
+        with your qbmove and open `Properties`.
+        Select the tab `Port Settings` and click on `Advanced...`.
+        Be sure to set a port number within 1, 2, 3 or 4.
+        Click `OK` and `OK` again.
         Now you can come back to your simulink model, double-click on the
         QB Move Init block and type the port you choose between single
         quote mark (e.g. 'COM1').
-        
+
     + UNIX or MAC
 
         Under unix you do not need to make any special modification to
@@ -159,7 +156,7 @@ created during compiling is added too, otherwise you will need to add it again.
 
         To retrieve the name of the port you need to open a Terminal
         window and type `ls /dev/`
-        You shoul see a series of interfaces:
+        You should see a series of interfaces:
         - MAC OS X: the interface is usually called "tty.usbserial-XX"
            where XX is the serial of the qbmove.
         - LINUX: the interface is usually called "tty.USB0" or similar
@@ -175,24 +172,36 @@ In the main folder you will find an example called "qbmove_example.slx"
 This is a simple configuration which you can use to test your qbmove.
 On the left there are two slider gain which can be tweaked while the
 simulation is running and you can see the result on the qbmove.
-On the right there are 3 displays where you can read the value in degree of
+On the right there are 3 displays where you can read the values in degree of
 the 3 sensors (1 and 2 are the motor shafts, 3 is the qbmove output shaft).
-The ouput error can be used to see if there are errors in communication.
+The output error can be used to see if there are errors in communication.
 It starts from zero and it is incremented by 1 every time a communication error
 occurs.
 As you can see in the bottom-left corner there is also the "QB Pacer" block
-used to ensure the correct temporization between simulation and real time.
+used to ensure the correct synchronization between simulation and real time.
 If you want, you can use the output of this block to trace the time of the
 simulation.
 
 > If you take a look at the scope you can observe two lines. One is the
 > simulation clock and the other one is the real time pacer output.
-> If they overlap, the sample time of the simulation is properly choosen,
+> If they overlap, the sample time of the simulation is properly chosen,
 > this means that the step size is big enough to let the communication
-> finish between two consecutive steps.
+> finish between two consecutive steps. If the two lines diverge, you have
+> to use a bigger step size.
 
 In this particular configuration, the step size is set to 2 milliseconds
 and the computer should be able to run it in real time. This means that
-every 2 milliseconds you send a new reference position to the qbmove and 
+every 2 milliseconds you send a new reference position to the qbmove and
 the current position is read. Furthermore a current reading is done
 and you can see the milliampere absorbed by each of the two motors.
+
+### qbmove_id_utils
+
+In the library folder you will find a file called qbmove_id_utils.m
+By executing this script, a simple GUI will open and you will be able to
+set and get the ID of your qbmove.
+Before executing the GUI, connect one single qbmove to your computer with the
+USB cable. The port should be automatically retrieved by the program and you
+will be able to select it using the dropdown menu.
+Click get to read the current qbmove ID.
+Insert a new ID and click set if you want to change it.
