@@ -35,6 +35,17 @@ E.g.
 
 ## Installation:
 
+### Downloads
+
+To be able to correctly use these libraries, you will need to download the current APIs
+You can find them [here](https://github.com/qbrobotics/qbAPI).
+You will need to just download the qbAPI folder and save it side by side with the qbmove_simulink
+folder. Before compiling be sure to have a folder tree like that:
+
+* working_directory
+    * qbAPI
+    * qbmove_simuilnk
+
 ### The compiler
 
 1.  First of all be sure to have a C compiler installed in your system
