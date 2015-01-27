@@ -40,11 +40,17 @@ E.g.
 To be able to correctly use these libraries, you will need to download the current APIs
 You can find them [here](https://github.com/qbrobotics/qbAPI).
 You will need to just download the qbAPI folder and save it side by side with the qbmove_simulink
-folder. Before compiling be sure to have a folder tree like that:
+folder. Before compiling be sure to have a folder tree like that (be sure to remove the `-master` suffix):
 
 * working_directory
     * qbAPI
     * qbmove_simuilnk
+
+
+> NOTE: if it is the first time you use the qbmove units on your computer, it is possible that
+> you need to download the drivers to let your computer see the port correctly.
+> To do that visit [FTDI driver](http://www.ftdichip.com/Drivers/VCP.htm) webpage -> VCP drivers
+> and download the proper driver depending on your OS
 
 ### The compiler
 
