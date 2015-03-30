@@ -74,12 +74,13 @@
 #define BUFFER_SIZES            15
 #define ANG_TO_DEG              720.0/65536.0
 #define DEG_TO_ANG              65536.0/720.0
+#define PERC_TO_NUM             32767.0/100.0
 #define MAX_STIFF               4000
 #define MAX_POS                 15000
 
 //=============================================================     enumerations
 
-enum    QBOT_MODE { PRIME_MOVERS_POS    = 1, EQ_POS_AND_PRESET  = 2 };
+enum    QBOT_MODE { PRIME_MOVERS_POS = 1, EQ_POS_AND_PRESET = 2 , EQ_POS_AND_STIFF_PERC = 3};
 enum    COMM_DIRS { RX = 1, TX = 2, BOTH = 3, NONE = 4 };
 
 //===================================================================     macros
@@ -265,6 +266,11 @@ static void mdlInitializeSizes( SimStruct *S )
         case EQ_POS_AND_PRESET:
             mexEvalString(
   "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset')" );
+            break;
+        
+        case EQ_POS_AND_STIFF_PERC:
+            mexEvalString(
+                "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Percentage')" );
             break;
     }
 }
@@ -554,6 +560,8 @@ static void mdlUpdate( SimStruct *S, int_T tid )
 
                 refs[0] = (int16_T)( auxa );
                 refs[1] = (int16_T)( auxb );
+                
+                commSetInputs(&comm_settings_t, qbot_id, refs);
                 break;
 
             case EQ_POS_AND_PRESET:
@@ -577,10 +585,33 @@ static void mdlUpdate( SimStruct *S, int_T tid )
 
                 refs[0] = (int16_T)( auxa + auxb);
                 refs[1] = (int16_T)( auxa - auxb);
+                
+                commSetInputs(&comm_settings_t, qbot_id, refs);
+                break;
+                
+            case EQ_POS_AND_STIFF_PERC:
+                auxa = (int)(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
+                auxb = (int)(PERC_TO_NUM * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
+                
+                if (auxa > MAX_POS) {
+                    auxa = MAX_POS;
+                } else if (auxa < -MAX_POS) {
+                    auxa = -MAX_POS;
+                }
+                
+                if (auxb > 32767) {
+                    auxb = 32767;
+                } else if (auxb <= 0) {
+                    auxb = 0;
+                }
+                
+                refs[0] = (int16_T)(auxa);
+                refs[1] = (int16_T)(auxb);
+                
+                printf("refs0: %d refs1: %d\n", refs[0], refs[1]);
+                commSetPosStiff(&comm_settings_t, qbot_id, refs);
                 break;
         }
-
-        commSetInputs(&comm_settings_t, qbot_id, refs);
     }
 }
 #endif /* MDL_UPDATE */

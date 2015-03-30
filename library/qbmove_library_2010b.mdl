@@ -15,10 +15,10 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "laurentio"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jun 20 12:27:32 2014"
-  RTWModifiedTimeStamp	  325014769
-  ModelVersionFormat	  "1.%<AutoIncrement:50>"
-  ConfigurationManager	  "None"
+  LastModifiedDate	  "Mon Mar 30 13:43:07 2015"
+  RTWModifiedTimeStamp	  349623787
+  ModelVersionFormat	  "1.%<AutoIncrement:58>"
+  ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
@@ -377,10 +377,13 @@ Library {
 	    PropName		    "DisabledProps"
 	  }
 	  SystemTargetFile	  "grt.tlc"
+	  TLCOptions		  ""
 	  GenCodeOnly		  off
 	  MakeCommand		  "make_rtw"
 	  GenerateMakefile	  on
 	  TemplateMakefile	  "grt_default_tmf"
+	  PostCodeGenCommand	  ""
+	  Description		  ""
 	  GenerateReport	  off
 	  SaveLog		  off
 	  RTWVerbose		  on
@@ -391,9 +394,18 @@ Library {
 	  TLCAssert		  off
 	  ProcessScriptMode	  "Default"
 	  ConfigurationMode	  "Optimized"
+	  ProcessScript		  ""
+	  ConfigurationScript	  ""
 	  ConfigAtBuild		  off
 	  RTWUseLocalCustomCode	  off
 	  RTWUseSimCustomCode	  off
+	  CustomSourceCode	  ""
+	  CustomHeaderCode	  ""
+	  CustomInclude		  ""
+	  CustomSource		  ""
+	  CustomLibrary		  ""
+	  CustomInitializer	  ""
+	  CustomTerminator	  ""
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  TargetLang		  "C"
@@ -406,8 +418,10 @@ Library {
 	  GenerateTraceReportEml  off
 	  GenerateCodeInfo	  off
 	  RTWCompilerOptimization "Off"
+	  RTWCustomCompilerOptimizations ""
 	  CheckMdlBeforeBuild	  "Off"
 	  CustomRebuildMode	  "OnUpdate"
+	  DataInitializer	  ""
 	  Array {
 	    Type		    "Handle"
 	    Dimension		    2
@@ -503,7 +517,7 @@ Library {
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
 	      TargetPreCompLibLocation ""
-	      TargetFunctionLibrary   "ANSI_C"
+	      TargetFunctionLibrary   "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
 	      ERTMultiwordLength      256
@@ -511,7 +525,6 @@ Library {
 	      GenerateFullHeader      on
 	      GenerateSampleERTMain   off
 	      GenerateTestInterfaces  off
-	      IsPILTarget	      off
 	      ModelReferenceCompliant on
 	      ParMdlRefBuildCompliant on
 	      CompOptLevelCompliant   on
@@ -536,7 +549,7 @@ Library {
 	      EnableShiftOperators    on
 	      ParenthesesLevel	      "Nominal"
 	      ModelStepFunctionPrototypeControlCompliant off
-	      CPPClassGenCompliant    off
+	      CPPClassGenCompliant    on
 	      AutosarCompliant	      off
 	      UseMalloc		      off
 	      ExtMode		      off
@@ -617,7 +630,7 @@ Library {
   }
   System {
     Name		    "qbmove_library_2010b"
-    Location		    [476, 202, 1113, 720]
+    Location		    [1127, 253, 1708, 765]
     Open		    off
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -629,7 +642,7 @@ Library {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "100"
+    ZoomFactor		    "166"
     ReportName		    "simulink-default.rpt"
     SIDHighWatermark	    "14"
     Block {
@@ -656,12 +669,13 @@ Library {
       MaskVisibilityString    "on,off,off"
       MaskToolTipString	      "on,on,on"
       MaskInitialization      "\n\n"
+      MaskDisplay	      "qbcurrentMaskDrawing"
       MaskIconFrame	      on
       MaskIconOpaque	      on
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "65|Prime Movers Positions|off"
+      MaskValueString	      "1|Prime Movers Positions|off"
       MaskTabNameString	      "Options,Options,Options"
     }
     Block {
@@ -682,7 +696,7 @@ Library {
       MaskPromptString	      "ID|Communication Directions|Input Type|Daisy Chaining Enable|Angle Range|Software Limita"
       "tion of the Equilibrium Position Range|Offset to the Equilibrium Position"
       MaskStyleString	      "edit,popup(Rx|Tx|Both|None),popup(Prime Movers Positions|Equilibrium Position and Stiffne"
-      "ss Preset),checkbox,edit,edit,edit"
+      "ss Preset|Equilibrium Position and Stiffness Percentage),checkbox,edit,edit,edit"
       MaskVariables	      "ID=@1;ACTIVE_COMM_DIRECTIONS=@2;CONTROL_MODE=@3;DAISY_CHAINING=@4;MAX_ANG=@5;SW_LIMIT=@6;OF"
       "FSET=@7;"
       MaskTunableValueString  "on,on,on,off,on,off,off"
@@ -697,7 +711,7 @@ Library {
       MaskIconRotate	      "none"
       MaskPortRotate	      "default"
       MaskIconUnits	      "autoscale"
-      MaskValueString	      "65|Both|Equilibrium Position and Stiffness Preset|off|0|inf|0"
+      MaskValueString	      "1|Both|Equilibrium Position and Stiffness Preset|off|0|inf|0"
       MaskTabNameString	      "Options,Options,Options,Options,Options,Options,Options"
     }
     Block {
