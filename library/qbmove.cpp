@@ -608,7 +608,6 @@ static void mdlUpdate( SimStruct *S, int_T tid )
                 refs[0] = (int16_T)(auxa);
                 refs[1] = (int16_T)(auxb);
                 
-                printf("refs0: %d refs1: %d\n", refs[0], refs[1]);
                 commSetPosStiff(&comm_settings_t, qbot_id, refs);
                 break;
         }
