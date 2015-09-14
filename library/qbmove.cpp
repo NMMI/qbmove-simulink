@@ -53,7 +53,7 @@
 #define params_joint_offset(i) ( mxGetPr( ssGetSFcnParam(S, 6) )[\
                                      i >= OFFSET_WIDTH ? OFFSET_WIDTH - 1 : i] )
 
-#define PARAM_ACTIVATE_FCN  ( (bool)mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
+#define PARAM_ACTIVE_STARTUP_FCN  ( (bool) mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
 #define PARAM_UNITY_FCN  ( (int) mxGetScalar( ssGetSFcnParam( S, 8 ) ) )
 
 
@@ -62,6 +62,8 @@
 #define in_handle ( *(const HANDLE* *)ssGetInputPortSignal( S, 0 ) )[0]
 #define in_ref_a  ( (const real_T *)ssGetInputPortSignal(   S, 1 ) )
 #define in_ref_b  ( (const real_T *)ssGetInputPortSignal(   S, 2 ) )
+
+#define in_ref_activation  ( (const real_T *)ssGetInputPortSignal(   S, 3 ) )
 
 //==================================================================     outputs
 
@@ -78,16 +80,22 @@
 //================================================================     constants
 
 #define BUFFER_SIZES            15
-#define ANG_TO_DEG              720.0/65536.0
-#define DEG_TO_ANG              65536.0/720.0
-#define PERC_TO_NUM             32767.0/100.0
+#define ANG_TO_DEG              (720.0/65536.0)
+#define DEG_TO_ANG              (65536.0/720.0)
+#define PERC_TO_NUM             (32767.0/100.0)
 #define MAX_STIFF               4000
 #define MAX_POS                 15000
 
 #define ON                      true
 #define OFF                     false
+#define TICK                    3
 #define RADIANTS                2
 #define DEGREES                 1
+#define RAD_TO_DEG              (180.0 / 3.14159265359)
+
+#define WIDTH_MISMATCH_A        0
+#define WIDTH_MISMATCH_B        1
+#define WIDTH_MISMATCH_ACTIVATE 2
 //=============================================================     enumerations
 
 enum    QBOT_MODE { PRIME_MOVERS_POS = 1, EQ_POS_AND_PRESET = 2 , EQ_POS_AND_STIFF_PERC = 3};
@@ -103,13 +111,15 @@ enum    COMM_DIRS { RX = 1, TX = 2, BOTH = 3, NONE = 4 };
 #define REF_B_WIDTH     ssGetInputPortWidth( S, 2 )
 #define SIGN(x)         ( ( (x) < 0) ? -1 : ( (x) > 0 ) )
 
+#define REF_ACTIVATE_WIDTH     ssGetInputPortWidth( S, 3 )
 //==============================================================================
 //                                                           function prototypes
 //==============================================================================
 
 unsigned char checksum_ ( unsigned char * buf, int size );
 void    showOutputHandle( SimStruct *S );
-void    activation(SimStruct *s, bool flag);
+void    activation(SimStruct *s, bool flag, const int ID = -1);
+void    errorHandle(SimStruct *S, const int);
 
 //==============================================================================
 //                                                            mdlInitializeSizes
@@ -152,21 +162,29 @@ static void mdlInitializeSizes( SimStruct *S )
                                 //      - angle range
                                 //    - software limit on equilibrium position
                                 //    - joint offset for equilibrium position
-                                //    - activate button
+                                //    - activation on startup button
                                 //    - measurement unity
 //===================================================================     inputs
+
+    // Set number of inputs
 
     switch(params_com_direction)
     {
         case TX :
         case BOTH :
-            if ( !ssSetNumInputPorts( S, 3 ) ) return;
+            i = 3;
         break;
         case RX :
         default :
-            if ( !ssSetNumInputPorts( S, 1 ) ) return;
+            i = 1;
         break;
     }
+
+    if (!PARAM_ACTIVE_STARTUP_FCN)
+        i++;        
+
+    if ( !ssSetNumInputPorts( S, i ) ) 
+        return;
 
 /////////////////////////////////////// 0 ) pointer to HANDLE   ////////////////
     ssSetInputPortWidth             ( S, 0, DYNAMICALLY_SIZED );
@@ -190,6 +208,17 @@ static void mdlInitializeSizes( SimStruct *S )
         ssSetInputPortDirectFeedThrough ( S, 2, 0                 );
         ssSetInputPortRequiredContiguous( S, 2, 1                 );
     }
+
+    if( !PARAM_ACTIVE_STARTUP_FCN )
+    {
+//////////////////////////////////////// 3 ) external activation ///////////////
+        ssSetInputPortWidth             ( S, 3, DYNAMICALLY_SIZED );
+        ssSetInputPortDataType          ( S, 3, SS_DOUBLE         );
+        ssSetInputPortDirectFeedThrough ( S, 3, 1                 );
+        ssSetInputPortRequiredContiguous( S, 3, 1                 );
+    }
+
+
 
 //==================================================================     outputs
 
@@ -277,7 +306,7 @@ static void mdlInitializeSizes( SimStruct *S )
             break;
         case EQ_POS_AND_PRESET:
             mexEvalString(
-  "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset')" );
+                "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset')" );
             break;
         
         case EQ_POS_AND_STIFF_PERC:
@@ -285,6 +314,7 @@ static void mdlInitializeSizes( SimStruct *S )
                 "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Percentage')" );
             break;
     }
+
 }
 
 //==============================================================================
@@ -387,6 +417,18 @@ static void mdlStart( SimStruct *S )
     char aux_char;
     comm_settings comm_settings_t;
 
+//=============================                           Check inputs integrity 
+
+    if ((REF_A_WIDTH > 1) && (REF_A_WIDTH != NUM_OF_QBOTS))
+        return errorHandle(S, WIDTH_MISMATCH_A);    
+
+    if ((REF_B_WIDTH > 1) && (REF_B_WIDTH != NUM_OF_QBOTS))    
+        return errorHandle(S, WIDTH_MISMATCH_B);
+
+    if ( !PARAM_ACTIVE_STARTUP_FCN && (REF_ACTIVATE_WIDTH != NUM_OF_QBOTS))
+        return errorHandle(S, WIDTH_MISMATCH_ACTIVATE);
+
+
 //=============================     should an output handle appear in the block?
 
     if(params_daisy_chaining) 
@@ -398,14 +440,13 @@ static void mdlStart( SimStruct *S )
         if(in_handle == INVALID_HANDLE_VALUE) return;
     #else
         if(in_handle == -1) return;
-    #endif
+    #endif 
 
     //RS485InitCommSettings(&comm_settings_t);
     comm_settings_t.file_handle = in_handle;
 
-    if (PARAM_ACTIVATE_FCN)
-        activation(S, ON);
-        
+    if (PARAM_ACTIVE_STARTUP_FCN)
+        activation(S, ON);       
     
 }
 #endif /* MDL_START */
@@ -427,17 +468,25 @@ static void mdlOutputs( SimStruct *S, int_T tid )
     comm_settings comm_settings_t;
     char aux_char;
     int i;
-    double degORrad = 1;
+    double meas_unity;
     
     // Change Unity of Measurement
 
-    if (PARAM_UNITY_FCN == RADIANTS)
-        degORrad = 180.0 / 3.14159265359;
+    switch(PARAM_UNITY_FCN){
+        case DEGREES:
+            meas_unity = ANG_TO_DEG;
+            break;
+        case RADIANTS:
+            meas_unity = ANG_TO_DEG / RAD_TO_DEG;
+            break;
+        default: // TICK
+            meas_unity = 1;
+    }
 
 //=============================     should an output handle appear in the block?
 
-    if(params_daisy_chaining) showOutputHandle(S);
-
+    if(params_daisy_chaining) 
+        showOutputHandle(S);
 
 //====================================================     should we keep going?
 
@@ -472,9 +521,9 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 
         if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
         {
-            out_pos_a[i]       = (ANG_TO_DEG * (double) measurements[0]) / degORrad;
-            out_pos_b[i]       = (ANG_TO_DEG * (double) measurements[1]) / degORrad;
-            out_pos_link[i]    = (ANG_TO_DEG * (double) measurements[2]) / degORrad;
+            out_pos_a[i]       = ((double) measurements[0]) * meas_unity;
+            out_pos_b[i]       = ((double) measurements[1]) * meas_unity;
+            out_pos_link[i]    = ((double) measurements[2]) * meas_unity;
 
 
             dwork_out(i)[0] = out_pos_a[i];
@@ -499,16 +548,25 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 
 #define MDL_UPDATE  // Change to #undef to remove function
 #if defined(MDL_UPDATE)
-static void mdlUpdate( SimStruct *S, int_T tid )
+static void  mdlUpdate( SimStruct *S, int_T tid )
 {
     double   auxa, auxb;
-    static bool activation_state =  PARAM_ACTIVATE_FCN;
-    double degORrad = 1;
+    static real_T activation_state[255] = {0, 0, 0, 0};
+
+    double meas_unity = 1;
     
     // Change Unity of Measurement
+    switch(PARAM_UNITY_FCN){
+        case DEGREES:
+            meas_unity = DEG_TO_ANG;
+            break;
+        case RADIANTS:
+            meas_unity = DEG_TO_ANG * RAD_TO_DEG;
+            break;
+        default: // TICK
+            meas_unity = 1;
+    }
 
-    if (PARAM_UNITY_FCN == RADIANTS)
-        degORrad = 180.0 / 3.14159265359; 
 
     int16_T  refs[2];                           // auxiliary value
     uint8_T  qbot_id;                           // qbot id's
@@ -536,17 +594,21 @@ static void mdlUpdate( SimStruct *S, int_T tid )
 
     // Activatation after start up    
 
-    if (PARAM_ACTIVATE_FCN){
-        if (!activation_state)
-            activation(S, ON);
+    if (!PARAM_ACTIVE_STARTUP_FCN){
+        for (i = 0; i < NUM_OF_QBOTS; i++){
+            if (((int) activation_state[i] == 0) && ((int) in_ref_activation[i] == 1))
+                    activation(S, ON, i);
+            else{
+                if (((int) activation_state[i] == 1) && ((int) in_ref_activation[i] == 0))
+                    activation(S, OFF, i);
+            }
+        }
+        // Update old value
+
+        for (i = 0; i < NUM_OF_QBOTS; i++)
+            activation_state[i] = in_ref_activation[i];
     }
-    else
-        if (activation_state)
-            activation(S, OFF); 
 
-    // Update old value
-
-    activation_state = PARAM_ACTIVATE_FCN;
 
 
     for(i = 0; i < NUM_OF_QBOTS; i++)
@@ -586,11 +648,9 @@ static void mdlUpdate( SimStruct *S, int_T tid )
         switch( params_qbot_mode )
         {
             case PRIME_MOVERS_POS:
-                //auxa = round(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
-                //auxb = round(DEG_TO_ANG * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
 
-                auxa = (int)(DEG_TO_ANG * (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * degORrad));
-                auxb = (int)(DEG_TO_ANG * (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * degORrad));
+                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
 
                 refs[0] = (int16_T)( auxa );
                 refs[1] = (int16_T)( auxb );
@@ -599,11 +659,9 @@ static void mdlUpdate( SimStruct *S, int_T tid )
                 break;
 
             case EQ_POS_AND_PRESET:
-                //auxa = round(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
-                //auxb = round(DEG_TO_ANG * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
 
-                auxa = (int)(DEG_TO_ANG * (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * degORrad));
-                auxb = (int)(DEG_TO_ANG * (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * degORrad));
+                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
 
                 if (auxb < 0) {
                     auxb = 0;
@@ -625,8 +683,8 @@ static void mdlUpdate( SimStruct *S, int_T tid )
                 
             case EQ_POS_AND_STIFF_PERC:
 
-                auxa = (int)(DEG_TO_ANG * (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * degORrad));
-                auxb = (int)(DEG_TO_ANG * (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * degORrad));
+                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
 
                 if (auxa > MAX_POS) {
                     auxa = MAX_POS;
@@ -696,10 +754,11 @@ void showOutputHandle( SimStruct *S )
 // Function which activate or deactivate cubes [ON-Activate // OFF-Deactivate]
 //==============================================================================
 
-void activation(SimStruct *S, bool flag){
+void activation(SimStruct *S, bool flag, const int ID){
 
     char aux_char;
     int aux;
+    int start_count, end_count;
 
     comm_settings comm_settings_t;
     comm_settings_t.file_handle = in_handle;
@@ -713,7 +772,20 @@ void activation(SimStruct *S, bool flag){
         aux = 0;
     }
 
-    for(int i = 0; i < NUM_OF_QBOTS; i++)
+    // When ID is different -1 activate/disactivate all cubes
+    // When ID is equal -1 activate/disactivate only ID cube
+
+    if (ID != -1){
+        start_count = ID;
+        end_count = ID + 1;
+    }else{
+        start_count = 0;
+        end_count = NUM_OF_QBOTS;
+    }
+
+    // General activate/disactivate function
+
+    for(int i = start_count; i < end_count; i++)
     {
 
         if (flag == ON)
@@ -743,6 +815,33 @@ void activation(SimStruct *S, bool flag){
                 ssPrintf("Unable to deactivate\n");
   
     }
+}
+
+//==============================================================================
+//                                                                   errorHandle
+//==============================================================================
+// Error handle 
+//==============================================================================
+
+void errorHandle(SimStruct *S, const int error){
+
+    switch(error){
+        case WIDTH_MISMATCH_A:
+            ssSetErrorStatus(S, "First input size mismatch");
+            break;
+        case WIDTH_MISMATCH_B:
+            ssSetErrorStatus(S, "Second input size mismatch");
+            break;
+        case WIDTH_MISMATCH_ACTIVATE:
+            ssSetErrorStatus(S, "Activation input size mismatch");
+            break;
+        default:
+            break;
+    }
+
+    mdlTerminate(S);
+    
+    return;
 }
 
 //==============================================================================

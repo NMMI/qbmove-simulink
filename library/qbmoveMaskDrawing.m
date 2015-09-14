@@ -34,6 +34,9 @@ if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
         end
     end
 end
+if ( strcmp(get_param( gcb, 'ACTIVATE'), 'off') )
+    port_label( 'input', 4, 'activation' );
+end
 %==================================================================      OUTPUTS
 if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'None' ) )
   if( strcmp( get_param( gcb, 'DAISY_CHAINING'), 'on') )
