@@ -169,13 +169,13 @@ static void mdlInitializeSizes( SimStruct *S )
 //////////////////////////////////////// 1 ) reference A    ////////////////////
         ssSetInputPortWidth             ( S, 1, DYNAMICALLY_SIZED );
         ssSetInputPortDataType          ( S, 1, SS_DOUBLE         );
-        ssSetInputPortDirectFeedThrough ( S, 1, 1                 );
+        ssSetInputPortDirectFeedThrough ( S, 1, 0                 );
         ssSetInputPortRequiredContiguous( S, 1, 1                 );
 
 //////////////////////////////////////// 2 ) reference B    ////////////////////
         ssSetInputPortWidth             ( S, 2, DYNAMICALLY_SIZED );
         ssSetInputPortDataType          ( S, 2, SS_DOUBLE         );
-        ssSetInputPortDirectFeedThrough ( S, 2, 1                 );
+        ssSetInputPortDirectFeedThrough ( S, 2, 0                 );
         ssSetInputPortRequiredContiguous( S, 2, 1                 );
     }
 
