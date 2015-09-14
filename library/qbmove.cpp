@@ -23,6 +23,7 @@
 #include "simstruc.h"
 #include "../../qbAPI/src/qbmove_communications.h"
 
+
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
     #define sleep(x) Sleep(1000 * (x))
@@ -32,6 +33,7 @@
 #if !(defined(_WIN32) || defined(_WIN64))
     #include <unistd.h>
 #endif
+
 
 //==============================================================================
 //                                                                   definitions
@@ -50,6 +52,10 @@
                                      i >= SW_LIM_WIDTH ? SW_LIM_WIDTH - 1 : i] )
 #define params_joint_offset(i) ( mxGetPr( ssGetSFcnParam(S, 6) )[\
                                      i >= OFFSET_WIDTH ? OFFSET_WIDTH - 1 : i] )
+
+#define PARAM_ACTIVATE_FCN  ( (bool)mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
+#define PARAM_UNITY_FCN  ( (int) mxGetScalar( ssGetSFcnParam( S, 8 ) ) )
+
 
 //===================================================================     inputs
 
@@ -78,6 +84,10 @@
 #define MAX_STIFF               4000
 #define MAX_POS                 15000
 
+#define ON                      true
+#define OFF                     false
+#define RADIANTS                2
+#define DEGREES                 1
 //=============================================================     enumerations
 
 enum    QBOT_MODE { PRIME_MOVERS_POS = 1, EQ_POS_AND_PRESET = 2 , EQ_POS_AND_STIFF_PERC = 3};
@@ -99,6 +109,7 @@ enum    COMM_DIRS { RX = 1, TX = 2, BOTH = 3, NONE = 4 };
 
 unsigned char checksum_ ( unsigned char * buf, int size );
 void    showOutputHandle( SimStruct *S );
+void    activation(SimStruct *s, bool flag);
 
 //==============================================================================
 //                                                            mdlInitializeSizes
@@ -133,7 +144,7 @@ static void mdlInitializeSizes( SimStruct *S )
 
 //===============================================================     parameters
 
-    ssSetNumSFcnParams( S, 7 ); // 7 parameters:
+    ssSetNumSFcnParams( S, 9 ); // 9 parameters:
                                 //    - qbot I2C id
                                 //      - comm. direction: rx/tx/both
                                 //      - qbot mode: q1-q2 or qs-qd
@@ -141,7 +152,8 @@ static void mdlInitializeSizes( SimStruct *S )
                                 //      - angle range
                                 //    - software limit on equilibrium position
                                 //    - joint offset for equilibrium position
-
+                                //    - activate button
+                                //    - measurement unity
 //===================================================================     inputs
 
     switch(params_com_direction)
@@ -358,6 +370,7 @@ static void mdlInitializeSampleTimes( SimStruct *S )
     ssSetOffsetTime(S, 0, 0.0);
 }
 
+
 //==============================================================================
 //                                                                      mdlStart
 //==============================================================================
@@ -376,7 +389,8 @@ static void mdlStart( SimStruct *S )
 
 //=============================     should an output handle appear in the block?
 
-    if(params_daisy_chaining) showOutputHandle(S);
+    if(params_daisy_chaining) 
+        showOutputHandle(S);
 
 //======================================     should initialization be evaluated?
 
@@ -389,27 +403,10 @@ static void mdlStart( SimStruct *S )
     //RS485InitCommSettings(&comm_settings_t);
     comm_settings_t.file_handle = in_handle;
 
-    for(i = 0; i < NUM_OF_QBOTS; i++)
-    {
-        aux_char = 0x00;
-        printf("Activating cube ID %d: ", (int)params_qbot_id(i));
-
-        for (try_counter = 0; try_counter < 5; try_counter++) {
-            printf("%d ", (try_counter + 1));
-            commActivate(&comm_settings_t, params_qbot_id(i), 3);
-            commGetActivate(&comm_settings_t, params_qbot_id(i), &aux_char);
-            if (aux_char == 0x03) {
-                printf("DONE\n");
-                break;
-            } else {
-                usleep(10000);
-            }
-        }
-        if (aux_char != 0x03) {
-            printf("Unable to activate\n");
-        }
-    }
-
+    if (PARAM_ACTIVATE_FCN)
+        activation(S, ON);
+        
+    
 }
 #endif /* MDL_START */
 
@@ -428,11 +425,19 @@ static void mdlOutputs( SimStruct *S, int_T tid )
     short int measurements[3];
     uint8_T qbot_id;                                // qbot id's
     comm_settings comm_settings_t;
+    char aux_char;
     int i;
+    double degORrad = 1;
+    
+    // Change Unity of Measurement
+
+    if (PARAM_UNITY_FCN == RADIANTS)
+        degORrad = 180.0 / 3.14159265359;
 
 //=============================     should an output handle appear in the block?
 
     if(params_daisy_chaining) showOutputHandle(S);
+
 
 //====================================================     should we keep going?
 
@@ -467,9 +472,9 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 
         if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
         {
-            out_pos_a[i]       = ANG_TO_DEG * (double) measurements[0];
-            out_pos_b[i]       = ANG_TO_DEG * (double) measurements[1];
-            out_pos_link[i]    = ANG_TO_DEG * (double) measurements[2];
+            out_pos_a[i]       = (ANG_TO_DEG * (double) measurements[0]) / degORrad;
+            out_pos_b[i]       = (ANG_TO_DEG * (double) measurements[1]) / degORrad;
+            out_pos_link[i]    = (ANG_TO_DEG * (double) measurements[2]) / degORrad;
 
 
             dwork_out(i)[0] = out_pos_a[i];
@@ -480,6 +485,9 @@ static void mdlOutputs( SimStruct *S, int_T tid )
         }
     }
 }
+
+
+
 
 
 //==============================================================================
@@ -494,6 +502,14 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 static void mdlUpdate( SimStruct *S, int_T tid )
 {
     double   auxa, auxb;
+    static bool activation_state =  PARAM_ACTIVATE_FCN;
+    double degORrad = 1;
+    
+    // Change Unity of Measurement
+
+    if (PARAM_UNITY_FCN == RADIANTS)
+        degORrad = 180.0 / 3.14159265359; 
+
     int16_T  refs[2];                           // auxiliary value
     uint8_T  qbot_id;                           // qbot id's
     int16_T  ref_a, ref_b;                      // reference values (16 bits)
@@ -508,12 +524,30 @@ static void mdlUpdate( SimStruct *S, int_T tid )
         if(in_handle == -1) return;
     #endif
 
-    if( (params_com_direction != TX) & (params_com_direction != BOTH) ) return;
+
+    if( (params_com_direction != TX) & (params_com_direction != BOTH) ) 
+        return;
 
 //===========================================     sending command for each motor
 
     //RS485InitCommSettings(&comm_settings_t);
+
     comm_settings_t.file_handle = in_handle;
+
+    // Activatation after start up    
+
+    if (PARAM_ACTIVATE_FCN){
+        if (!activation_state)
+            activation(S, ON);
+    }
+    else
+        if (activation_state)
+            activation(S, OFF); 
+
+    // Update old value
+
+    activation_state = PARAM_ACTIVATE_FCN;
+
 
     for(i = 0; i < NUM_OF_QBOTS; i++)
     {
@@ -555,8 +589,8 @@ static void mdlUpdate( SimStruct *S, int_T tid )
                 //auxa = round(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
                 //auxb = round(DEG_TO_ANG * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
 
-                auxa = (int)(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
-                auxb = (int)(DEG_TO_ANG * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
+                auxa = (int)(DEG_TO_ANG * (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * degORrad));
+                auxb = (int)(DEG_TO_ANG * (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * degORrad));
 
                 refs[0] = (int16_T)( auxa );
                 refs[1] = (int16_T)( auxb );
@@ -568,8 +602,8 @@ static void mdlUpdate( SimStruct *S, int_T tid )
                 //auxa = round(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
                 //auxb = round(DEG_TO_ANG * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
 
-                auxa = (int)(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
-                auxb = (int)(DEG_TO_ANG * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
+                auxa = (int)(DEG_TO_ANG * (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * degORrad));
+                auxb = (int)(DEG_TO_ANG * (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * degORrad));
 
                 if (auxb < 0) {
                     auxb = 0;
@@ -590,9 +624,10 @@ static void mdlUpdate( SimStruct *S, int_T tid )
                 break;
                 
             case EQ_POS_AND_STIFF_PERC:
-                auxa = (int)(DEG_TO_ANG * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i]);
-                auxb = (int)(PERC_TO_NUM * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i]);
-                
+
+                auxa = (int)(DEG_TO_ANG * (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * degORrad));
+                auxb = (int)(DEG_TO_ANG * (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * degORrad));
+
                 if (auxa > MAX_POS) {
                     auxa = MAX_POS;
                 } else if (auxa < -MAX_POS) {
@@ -636,26 +671,7 @@ static void mdlTerminate( SimStruct *S )
         return;
     }
 
-    for(i = 0; i < NUM_OF_QBOTS; i++)
-    {
-        aux_char = 0x03;
-        printf("Deactivating cube ID %d: ", (int)params_qbot_id(i));
-
-        for (try_counter = 0; try_counter < 5; try_counter++) {
-            printf("%d ", (try_counter + 1));
-            commActivate(&comm_settings_t, (int)params_qbot_id(i), 0);
-            commGetActivate(&comm_settings_t, (int)params_qbot_id(i), &aux_char);
-            if (aux_char == 0x00) {
-                printf("DONE\n");
-                break;
-            } else {
-                usleep(10000);
-            }
-        }
-        if (aux_char != 0x00) {
-            printf("Unable to deactivate\n");
-        }
-    }
+    activation(S, OFF);
 
     closeRS485(&comm_settings_t);
 }
@@ -672,6 +688,61 @@ void showOutputHandle( SimStruct *S )
         out_handle_single   = (HANDLE *) &in_handle;    // appear in output 0
     if((params_com_direction == RX) | (params_com_direction == BOTH))
         out_handle_full     = (HANDLE *) &in_handle;    // appear in output 3
+}
+
+//==============================================================================
+//                                                                    activation
+//==============================================================================
+// Function which activate or deactivate cubes [ON-Activate // OFF-Deactivate]
+//==============================================================================
+
+void activation(SimStruct *S, bool flag){
+
+    char aux_char;
+    int aux;
+
+    comm_settings comm_settings_t;
+    comm_settings_t.file_handle = in_handle;
+
+    if (flag == ON){
+        aux_char = 0x00;
+        aux = 3;
+    }
+    else{
+        aux_char = 0x03;
+        aux = 0;
+    }
+
+    for(int i = 0; i < NUM_OF_QBOTS; i++)
+    {
+
+        if (flag == ON)
+            ssPrintf("Activating cube ID %d: ", (int) params_qbot_id(i));
+        else 
+            ssPrintf("Dectivating cube ID %d: ", (int) params_qbot_id(i));
+
+        for (int try_counter = 0; try_counter < 5; try_counter++) {
+            ssPrintf("%d ", (try_counter + 1));
+            
+            commActivate(&comm_settings_t, params_qbot_id(i), aux);
+            commGetActivate(&comm_settings_t, params_qbot_id(i), &aux_char);
+            
+            if ( ((flag == ON) && (aux_char == 0x03)) || ((flag == OFF) && (aux_char == 0x00)) ) {
+                ssPrintf("DONE\n");
+                break;
+            }
+            else
+                usleep(10000);
+
+        }
+        
+        if ((flag == ON) && (aux_char != 0x03)) 
+            ssPrintf("Unable to activate\n");
+        else
+            if ((flag == OFF) && (aux_char != 0x00)) 
+                ssPrintf("Unable to deactivate\n");
+  
+    }
 }
 
 //==============================================================================
