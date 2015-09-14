@@ -448,6 +448,8 @@ static void mdlStart( SimStruct *S )
     if (PARAM_ACTIVE_STARTUP_FCN)
         activation(S, ON);       
     
+    // Disable Activation on startup Flag and Setting ID
+    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on'})");
 }
 #endif /* MDL_START */
 
@@ -516,9 +518,10 @@ static void mdlOutputs( SimStruct *S, int_T tid )
         if (qbot_id < 0){
             shalf_dir = -1;
             qbot_id = abs(qbot_id);
-        }  
+        }
         else
             shalf_dir = 1;
+
 
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
@@ -630,9 +633,9 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
         if (qbot_id < 0){
             shalf_dir = -1;
             qbot_id = abs(qbot_id);
-        }
+        }       
         else
-            shalf_dir = 1;      
+            shalf_dir = 1;
 
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
@@ -676,7 +679,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                 commSetInputs(&comm_settings_t, qbot_id, refs);
                 break;
 
-            case EQ_POS_AND_PRESET:
+            case EQ_POS_AND_PRESET: 
 
                 auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
                 auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
@@ -748,6 +751,9 @@ static void mdlTerminate( SimStruct *S )
     }
 
     activation(S, OFF);
+    
+    // Enable Activation on startup Flag and Setting ID
+    mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on'})");
 
     closeRS485(&comm_settings_t);
 }
@@ -803,6 +809,7 @@ void activation(SimStruct *S, bool flag, const int ID){
     }
 
     // General activate/disactivate function
+
 
     for(int i = start_count; i < end_count; i++)
     {
