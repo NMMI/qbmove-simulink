@@ -464,11 +464,12 @@ static void mdlStart( SimStruct *S )
 static void mdlOutputs( SimStruct *S, int_T tid )
 {
     short int measurements[3];
-    uint8_T qbot_id;                                // qbot id's
+    int8_T qbot_id;                                // qbot id's
     comm_settings comm_settings_t;
     char aux_char;
     int i;
     double meas_unity;
+    double shalf_dir = 1;
     
     // Change Unity of Measurement
 
@@ -511,8 +512,16 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 //============================================================     qbot ID check
 
         qbot_id = params_qbot_id(i);
-        qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior ID limit
-        qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior ID limit
+
+        if (qbot_id < 0){
+            shalf_dir = -1;
+            qbot_id = abs(qbot_id);
+        }  
+        else
+            shalf_dir = 1;
+
+        qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
+        qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
 
 
         out_pos_a[i]    = dwork_out(i)[0];
@@ -553,7 +562,10 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     double   auxa, auxb;
     static real_T activation_state[255] = {0, 0, 0, 0};
 
+    // Measurements unity
     double meas_unity = 1;
+    // Shalf Direction [1 Direction direction / -1 Inverse direction]
+    double shalf_dir = 1;
     
     // Change Unity of Measurement
     switch(PARAM_UNITY_FCN){
@@ -567,9 +579,8 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
             meas_unity = 1;
     }
 
-
     int16_T  refs[2];                           // auxiliary value
-    uint8_T  qbot_id;                           // qbot id's
+    int8_T  qbot_id;                           // qbot id's
     int16_T  ref_a, ref_b;                      // reference values (16 bits)
     int i;
     comm_settings comm_settings_t;
@@ -609,14 +620,20 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
             activation_state[i] = in_ref_activation[i];
     }
 
-
-
     for(i = 0; i < NUM_OF_QBOTS; i++)
     {
 
 //============================================================     qbot ID check
 
         qbot_id = params_qbot_id(i);
+
+        if (qbot_id < 0){
+            shalf_dir = -1;
+            qbot_id = abs(qbot_id);
+        }
+        else
+            shalf_dir = 1;      
+
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
 
@@ -645,12 +662,13 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 //
 //         commSetInputs(&comm_settings_t, qbot_id, refs);
 
+
         switch( params_qbot_mode )
         {
             case PRIME_MOVERS_POS:
 
-                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
-                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
+                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity * shalf_dir) );
 
                 refs[0] = (int16_T)( auxa );
                 refs[1] = (int16_T)( auxb );
@@ -660,8 +678,8 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 
             case EQ_POS_AND_PRESET:
 
-                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
-                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
+                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
 
                 if (auxb < 0) {
                     auxb = 0;
@@ -683,8 +701,8 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                 
             case EQ_POS_AND_STIFF_PERC:
 
-                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
-                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
+                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
 
                 if (auxa > MAX_POS) {
                     auxa = MAX_POS;
@@ -759,6 +777,7 @@ void activation(SimStruct *S, bool flag, const int ID){
     char aux_char;
     int aux;
     int start_count, end_count;
+    int qbot_id;
 
     comm_settings comm_settings_t;
     comm_settings_t.file_handle = in_handle;
@@ -787,17 +806,17 @@ void activation(SimStruct *S, bool flag, const int ID){
 
     for(int i = start_count; i < end_count; i++)
     {
-
+        qbot_id = abs(params_qbot_id(i));
         if (flag == ON)
-            ssPrintf("Activating cube ID %d: ", (int) params_qbot_id(i));
+            ssPrintf("Activating cube ID %d: ", (int) qbot_id);
         else 
-            ssPrintf("Dectivating cube ID %d: ", (int) params_qbot_id(i));
+            ssPrintf("Dectivating cube ID %d: ", (int) qbot_id);
 
         for (int try_counter = 0; try_counter < 5; try_counter++) {
             ssPrintf("%d ", (try_counter + 1));
             
-            commActivate(&comm_settings_t, params_qbot_id(i), aux);
-            commGetActivate(&comm_settings_t, params_qbot_id(i), &aux_char);
+            commActivate(&comm_settings_t, qbot_id, aux);
+            commGetActivate(&comm_settings_t, qbot_id, &aux_char);
             
             if ( ((flag == ON) && (aux_char == 0x03)) || ((flag == OFF) && (aux_char == 0x00)) ) {
                 ssPrintf("DONE\n");
