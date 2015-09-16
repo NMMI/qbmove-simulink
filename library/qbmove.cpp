@@ -43,9 +43,9 @@
 
 #define params_qbot_id(i)     ( mxGetPr( ssGetSFcnParam( S, 0 ) )[ \
                                      i >= NUM_OF_QBOTS ? NUM_OF_QBOTS -1 : i ] )
-#define params_com_direction      ( (int)mxGetScalar( ssGetSFcnParam( S, 1 ) ) )
-#define params_qbot_mode          ( (int)mxGetScalar( ssGetSFcnParam( S, 2 ) ) )
-#define params_daisy_chaining  ( (bool)mxGetScalar( ssGetSFcnParam( S, 3 ) ) )
+#define params_com_direction      ( (int) mxGetScalar( ssGetSFcnParam( S, 1 ) ) )
+#define params_qbot_mode          ( (int) mxGetScalar( ssGetSFcnParam( S, 2 ) ) )
+#define params_daisy_chaining  ( (bool) mxGetScalar( ssGetSFcnParam( S, 3 ) ) )
 #define params_angle_range(i)  ( mxGetPr( ssGetSFcnParam( S, 4 ) )[ \
                               i >= ANG_RANGE_WIDTH ? ANG_RANGE_WIDTH - 1 : i ] )
 #define params_sw_lim_range(i) ( mxGetPr( ssGetSFcnParam(S, 5) )[ \
@@ -96,6 +96,7 @@
 #define WIDTH_MISMATCH_A        0
 #define WIDTH_MISMATCH_B        1
 #define WIDTH_MISMATCH_ACTIVATE 2
+#define RICH_QBOTS_MAX          3
 //=============================================================     enumerations
 
 enum    QBOT_MODE { PRIME_MOVERS_POS = 1, EQ_POS_AND_PRESET = 2 , EQ_POS_AND_STIFF_PERC = 3};
@@ -120,6 +121,13 @@ unsigned char checksum_ ( unsigned char * buf, int size );
 void    showOutputHandle( SimStruct *S );
 void    activation(SimStruct *s, bool flag, const int ID = -1);
 void    errorHandle(SimStruct *S, const int);
+
+//==============================================================================
+//                                                              Global Variables
+//==============================================================================
+
+int activation_state[255];
+
 
 //==============================================================================
 //                                                            mdlInitializeSizes
@@ -227,7 +235,8 @@ static void mdlInitializeSizes( SimStruct *S )
     {    // IF daisy chaining activated
         if(params_daisy_chaining)
         {
-            if (!ssSetNumOutputPorts(S, 1)) return;
+            if (!ssSetNumOutputPorts(S, 1)) 
+                return;
 
 ///////////////////////////////// 0 ) com handle    ////////////////////////////
             ssSetOutputPortWidth    ( S, 0, 1             );
@@ -235,7 +244,8 @@ static void mdlInitializeSizes( SimStruct *S )
         }
         else
         {
-            if (!ssSetNumOutputPorts(S, 0)) return;
+            if (!ssSetNumOutputPorts(S, 0)) 
+                return;
         }
     }
 
@@ -419,15 +429,17 @@ static void mdlStart( SimStruct *S )
 
 //=============================                           Check inputs integrity 
 
-    if ((REF_A_WIDTH > 1) && (REF_A_WIDTH != NUM_OF_QBOTS))
-        return errorHandle(S, WIDTH_MISMATCH_A);    
+    if( (params_com_direction == TX) | (params_com_direction == BOTH) ){
 
-    if ((REF_B_WIDTH > 1) && (REF_B_WIDTH != NUM_OF_QBOTS))    
-        return errorHandle(S, WIDTH_MISMATCH_B);
+        if ((REF_A_WIDTH > 1) && (REF_A_WIDTH != NUM_OF_QBOTS))
+            return errorHandle(S, WIDTH_MISMATCH_A);    
 
-    if ( !PARAM_ACTIVE_STARTUP_FCN && (REF_ACTIVATE_WIDTH != NUM_OF_QBOTS))
-        return errorHandle(S, WIDTH_MISMATCH_ACTIVATE);
+        if ((REF_B_WIDTH > 1) && (REF_B_WIDTH != NUM_OF_QBOTS))    
+            return errorHandle(S, WIDTH_MISMATCH_B);
 
+        if ( !PARAM_ACTIVE_STARTUP_FCN && (REF_ACTIVATE_WIDTH != NUM_OF_QBOTS))
+            return errorHandle(S, WIDTH_MISMATCH_ACTIVATE);
+    }
 
 //=============================     should an output handle appear in the block?
 
@@ -450,6 +462,15 @@ static void mdlStart( SimStruct *S )
     
     // Disable Activation on startup Flag and Setting ID
     mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on'})");
+
+    if (NUM_OF_QBOTS > 255)
+        return errorHandle(S, RICH_QBOTS_MAX);
+
+    for (int i = 0; i < NUM_OF_QBOTS; ++i)
+        activation_state[i] = 0;
+
+
+
 }
 #endif /* MDL_START */
 
@@ -533,9 +554,9 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 
         if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
         {
-            out_pos_a[i]       = ((double) measurements[0]) * meas_unity;
-            out_pos_b[i]       = ((double) measurements[1]) * meas_unity;
-            out_pos_link[i]    = ((double) measurements[2]) * meas_unity;
+            out_pos_a[i]       = ((double) measurements[0]) * meas_unity * shalf_dir;
+            out_pos_b[i]       = ((double) measurements[1]) * meas_unity * shalf_dir;
+            out_pos_link[i]    = ((double) measurements[2]) * meas_unity * shalf_dir;
 
 
             dwork_out(i)[0] = out_pos_a[i];
@@ -563,7 +584,6 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 static void  mdlUpdate( SimStruct *S, int_T tid )
 {
     double   auxa, auxb;
-    static real_T activation_state[255] = {0, 0, 0, 0};
 
     // Measurements unity
     double meas_unity = 1;
@@ -607,20 +627,19 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     comm_settings_t.file_handle = in_handle;
 
     // Activatation after start up    
-
     if (!PARAM_ACTIVE_STARTUP_FCN){
         for (i = 0; i < NUM_OF_QBOTS; i++){
-            if (((int) activation_state[i] == 0) && ((int) in_ref_activation[i] == 1))
+            if ((activation_state[i] == 0) && ((int) in_ref_activation[i] != 0))
                     activation(S, ON, i);
             else{
-                if (((int) activation_state[i] == 1) && ((int) in_ref_activation[i] == 0))
+                if ((activation_state[i] != 0) && ((int) in_ref_activation[i] == 0))
                     activation(S, OFF, i);
             }
         }
         // Update old value
 
         for (i = 0; i < NUM_OF_QBOTS; i++)
-            activation_state[i] = in_ref_activation[i];
+            activation_state[i] = (int) in_ref_activation[i];
     }
 
     for(i = 0; i < NUM_OF_QBOTS; i++)
@@ -813,7 +832,7 @@ void activation(SimStruct *S, bool flag, const int ID){
 
     for(int i = start_count; i < end_count; i++)
     {
-        qbot_id = abs(params_qbot_id(i));
+        qbot_id = abs((int) params_qbot_id(i));
         if (flag == ON)
             ssPrintf("Activating cube ID %d: ", (int) qbot_id);
         else 
@@ -853,15 +872,19 @@ void errorHandle(SimStruct *S, const int error){
 
     switch(error){
         case WIDTH_MISMATCH_A:
-            ssSetErrorStatus(S, "First input size mismatch");
+            ssSetErrorStatus(S, "[ERROR] First input size mismatch");
             break;
         case WIDTH_MISMATCH_B:
-            ssSetErrorStatus(S, "Second input size mismatch");
+            ssSetErrorStatus(S, "[ERROR] Second input size mismatch");
             break;
         case WIDTH_MISMATCH_ACTIVATE:
-            ssSetErrorStatus(S, "Activation input size mismatch");
+            ssSetErrorStatus(S, "[ERROR] Activation input size mismatch");
+            break;
+        case RICH_QBOTS_MAX:
+            ssSetErrorStatus(S, "[ERROR] Max number of QBOTs available riched");
             break;
         default:
+            ssSetErrorStatus(S, "[ERROR] Generic");
             break;
     }
 
