@@ -79,7 +79,7 @@ Windows, Linux... but you need to recompile it for your system.
 1.  In Matlab go to "Set Path", click on "Add with subfolders" and include
     the folder `qbmove_simulink` on your Matlab paths.
 2.  Click "Save", then "Close".
-3.  Navigate to the `qbmove_simulink` folder and execute `install.m`. This is
+3.  **[WARNING]** [Deprecate] - NOT follow this point - Navigate to the `qbmove_simulink` folder and execute `install.m`. This is
     a simple script that simply choose the proper library version based on your Matlab
     version and rename it subtracting the YEAR extension.
     e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
