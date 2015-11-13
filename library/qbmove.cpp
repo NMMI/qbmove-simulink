@@ -321,7 +321,7 @@ static void mdlInitializeSizes( SimStruct *S )
         
         case EQ_POS_AND_STIFF_PERC:
             mexEvalString(
-                "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Percentage')" );
+                "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset Percentage')" );
             break;
     }
 
@@ -724,8 +724,8 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
             case EQ_POS_AND_STIFF_PERC:
 
                 auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
-                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
-
+                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * PERC_TO_NUM ) );
+                
                 if (auxa > MAX_POS) {
                     auxa = MAX_POS;
                 } else if (auxa < -MAX_POS) {
