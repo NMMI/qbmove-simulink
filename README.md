@@ -64,28 +64,16 @@ folder. Before compiling be sure to have a folder tree like that (be sure to rem
     [this](http://www.mathworks.it/it/help/matlab/matlab_external/what-you-need-to-build-mex-files.html)
     link.
 
-### Compile the library
+### Compile and Include the library  
 
 The library can be used on various operating systems such as MacOS X,
 Windows, Linux... but you need to recompile it for your system.
 
-1.  Navigate in the folder `library`.
-2.  On the Matlab Command Window type "make" and press return. If no error
-    is returned the libraries are correctly compiled.
-
-
-### Include the library
-
-1.  In Matlab go to "Set Path", click on "Add with subfolders" and include
-    the folder `qbmove_simulink` on your Matlab paths.
-2.  Click "Save", then "Close".
-3.  **[WARNING]** [Deprecate] - NOT follow this point - Navigate to the `qbmove_simulink` folder and execute `install.m`. This is
-    a simple script that simply choose the proper library version based on your Matlab
-    version and rename it subtracting the YEAR extension.
-    e.g.  qbmove_library_2013a.slx -> qbmove_library.slx
-
-> NOTE: add the library to matlab path after compiling so that the folder `bin` which is
-created during compiling is added too, otherwise you will need to add it again.
+1.  Move your position in `qbmove_simulink`,type install and press return. 
+    It will install the library depends on your MATLAB configuration and 
+    set necessary path.
+    If no error is returned the libraries are correctly compiled and it is
+    displayed a successful comment on shell.
 
 ## Use
 

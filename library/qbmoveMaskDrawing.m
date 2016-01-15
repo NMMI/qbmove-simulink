@@ -26,7 +26,7 @@ if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
         if (strcmp( get_param( gcb, 'CONTROL_MODE'), ...
                                     'Equilibrium Position and Stiffness Preset Percentage' ))
           port_label( 'input', 2, 'eq.pos.' );
-          port_label( 'input', 3, 's.preset 0-100%' );
+          port_label( 'input', 3, 'stiff 0-100%' );
 
         else
           port_label( 'input', 2, 'pos.1' );
