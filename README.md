@@ -70,7 +70,7 @@ The library can be used on various operating systems such as MacOS X,
 Windows, Linux... but you need to recompile it for your system.
 
 1.  Move your position in `qbmove_simulink`,type install and press return. 
-    It will install the library depends on your MATLAB configuration and 
+    It will install the library depending on your MATLAB configuration and 
     set necessary path.
     If no error is returned the libraries are correctly compiled and it is
     displayed a successful comment on shell.
