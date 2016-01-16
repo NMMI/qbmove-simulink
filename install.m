@@ -4,7 +4,6 @@
 
 clear all
 clc
-
 % Install library
 
 cd library
@@ -81,6 +80,27 @@ copyfile(old_file, new_file);
 path(genpath(cd), path);
 
 clc
+
+flag_path = savepath;
+
+while flag_path
+    alternative_path = input('Chose an alternative path for pathdef.m file (without end slash): ', 's');
+    
+    if exist(alternative_path,'dir')
+    
+        alternative_path = strcat(alternative_path, '/pathdef.m');
+
+        flag_path = savepath(alternative_path);
+
+        if (flag_path)
+            disp(['[ERROR] Path not correct. ' alaternative_path]);
+        end
+    else
+        disp(['[ERROR] This is not a directory. ' alaternative_path]);
+    end
+end
+
+
 
 if last_version_flag
     display('[WARNING] MATLAB version is not supported, last version available set.')
