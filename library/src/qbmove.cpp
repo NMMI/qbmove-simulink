@@ -21,7 +21,7 @@
 
 #include "definitions.h"
 #include "simstruc.h"
-#include "../../qbAPI/src/qbmove_communications.h"
+#include "../../../qbAPI/src/qbmove_communications.h"
 
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -474,7 +474,7 @@ static void mdlStart( SimStruct *S )
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
 
-        commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
+        //commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
     }
 
 }
