@@ -21,7 +21,7 @@
 
 #include "definitions.h"
 #include "simstruc.h"
-#include "../../../qbAPI/src/qbmove_communications.h"
+#include "../../qbAPI/src/qbmove_communications.h"
 
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -97,7 +97,7 @@
 #define WIDTH_MISMATCH_A        0
 #define WIDTH_MISMATCH_B        1
 #define WIDTH_MISMATCH_ACTIVATE 2
-#define RICH_QBOTS_MAX          3
+#define REACH_QBOTS_MAX         3
 //=============================================================     enumerations
 
 enum    QBOT_MODE { PRIME_MOVERS_POS = 1, EQ_POS_AND_PRESET = 2 , EQ_POS_AND_STIFF_PERC = 3};
@@ -190,7 +190,7 @@ static void mdlInitializeSizes( SimStruct *S )
         break;
     }
 
-    if (!PARAM_ACTIVE_STARTUP_FCN)
+    if (((params_com_direction == TX) | (params_com_direction == BOTH)) & (!PARAM_ACTIVE_STARTUP_FCN ))
         i++;        
 
     if ( !ssSetNumInputPorts( S, i ) ) 
@@ -217,17 +217,16 @@ static void mdlInitializeSizes( SimStruct *S )
         ssSetInputPortDataType          ( S, 2, SS_DOUBLE         );
         ssSetInputPortDirectFeedThrough ( S, 2, 0                 );
         ssSetInputPortRequiredContiguous( S, 2, 1                 );
-    }
-
-    if( !PARAM_ACTIVE_STARTUP_FCN )
-    {
+     
+        if( !PARAM_ACTIVE_STARTUP_FCN )
+        {
 //////////////////////////////////////// 3 ) external activation ///////////////
-        ssSetInputPortWidth             ( S, 3, DYNAMICALLY_SIZED );
-        ssSetInputPortDataType          ( S, 3, SS_DOUBLE         );
-        ssSetInputPortDirectFeedThrough ( S, 3, 1                 );
-        ssSetInputPortRequiredContiguous( S, 3, 1                 );
+            ssSetInputPortWidth             ( S, 3, DYNAMICALLY_SIZED );
+            ssSetInputPortDataType          ( S, 3, SS_DOUBLE         );
+            ssSetInputPortDirectFeedThrough ( S, 3, 1                 );
+            ssSetInputPortRequiredContiguous( S, 3, 1                 );
+        }
     }
-
 
 
 //==================================================================     outputs
@@ -412,7 +411,6 @@ static void mdlInitializeSampleTimes( SimStruct *S )
     ssSetOffsetTime(S, 0, 0.0);
 }
 
-
 //==============================================================================
 //                                                                      mdlStart
 //==============================================================================
@@ -424,7 +422,6 @@ static void mdlInitializeSampleTimes( SimStruct *S )
 #if     defined(MDL_START)
 static void mdlStart( SimStruct *S )
 {
-    int i, j;
     int8_T qbot_id;
     int try_counter;
     char aux_char;
@@ -467,7 +464,7 @@ static void mdlStart( SimStruct *S )
     mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','off','on'})");
 
     if (NUM_OF_QBOTS > 255)
-        return errorHandle(S, RICH_QBOTS_MAX);
+        return errorHandle(S, REACH_QBOTS_MAX);
 
     for (int i = NUM_OF_QBOTS; i--;){
         activation_state[i] = 0;
@@ -477,7 +474,7 @@ static void mdlStart( SimStruct *S )
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
 
-        //commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
+        commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
     }
 
 }
@@ -529,7 +526,6 @@ static void mdlOutputs( SimStruct *S, int_T tid )
         if(in_handle == -1) return;
     #endif
 
-
     // If we do not need to update outputs, return
     if( (params_com_direction != RX) & (params_com_direction != BOTH) )
         return;
@@ -571,9 +567,9 @@ static void mdlOutputs( SimStruct *S, int_T tid )
             dwork_out(i)[0] = out_pos_a[i];
             dwork_out(i)[1] = out_pos_b[i];
             dwork_out(i)[2] = out_pos_link[i];
-        } else {
+            
+        } else
             out_debug[i] += 1;
-        }
     }
 }
 
@@ -749,6 +745,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                 refs[1] = (int16_T)(auxb);
                 
                 commSetPosStiff(&comm_settings_t, qbot_id, refs);
+                
                 break;
         }
     }
@@ -888,8 +885,8 @@ void errorHandle(SimStruct *S, const int error){
         case WIDTH_MISMATCH_ACTIVATE:
             ssSetErrorStatus(S, "[ERROR] Activation input size mismatch");
             break;
-        case RICH_QBOTS_MAX:
-            ssSetErrorStatus(S, "[ERROR] Max number of QBOTs available riched");
+        case REACH_QBOTS_MAX:
+            ssSetErrorStatus(S, "[ERROR] Max number of QBOTs available reached");
             break;
         default:
             ssSetErrorStatus(S, "[ERROR] Generic");

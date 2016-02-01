@@ -33,9 +33,10 @@ if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
           port_label( 'input', 3, 'pos.2' );
         end
     end
-end
-if ( strcmp(get_param( gcb, 'ACTIVATE'), 'off') )
-    port_label( 'input', 4, 'activation' );
+
+    if ( strcmp(get_param( gcb, 'ACTIVATE'), 'off') )
+      port_label( 'input', 4, 'activation' );
+    end
 end
 %==================================================================      OUTPUTS
 if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'None' ) )
@@ -63,15 +64,21 @@ end
 %     7   OFFSET                    off
 % CASE 'Tx' : nothing to do
 % CASE 'Rx' : set 'off' mask enables for SW_LIMIT and OFFSET
-if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
-  tmp_MaskEnables{6} = 'off';
-  tmp_MaskEnables{7} = 'off';
-end
-% CASE 'None' : set 'off' mask enables for MAX_ANG, SW_LIMIT and OFFSET
-if( strcmp( tmp_A_C_DIRS, 'None' ) )
-  tmp_MaskEnables{5} = 'off';
-  tmp_MaskEnables{6} = 'off';
-  tmp_MaskEnables{7} = 'off';
-end
-set_param( gcb, 'MaskEnables', tmp_MaskEnables );
-set_param( gcb, 'MaskVisibilities', tmp_MaskVisibilities );
+% if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
+%   tmp_MaskEnables{6} = 'off';
+%   tmp_MaskEnables{7} = 'off';
+%   tmp_MaskEnables{8} = 'off';
+%   tmp_MaskEnables{9} = 'off';
+%   tmp_MaskEnables{10} = 'on';
+% end
+% % CASE 'None' : set 'off' mask enables for MAX_ANG, SW_LIMIT and OFFSET
+% if( strcmp( tmp_A_C_DIRS, 'None' ) )
+%   tmp_MaskEnables{5} = 'off';
+%   tmp_MaskEnables{6} = 'off';
+%   tmp_MaskEnables{7} = 'off';
+%   tmp_MaskEnables{8} = 'off';
+%   tmp_MaskEnables{9} = 'off';
+%   tmp_MaskEnables{10} = 'on';
+% end
+% set_param( gcb, 'MaskEnables', tmp_MaskEnables );
+% set_param( gcb, 'MaskVisibilities', tmp_MaskVisibilities );
