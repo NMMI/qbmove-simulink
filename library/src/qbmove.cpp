@@ -21,7 +21,7 @@
 
 #include "definitions.h"
 #include "simstruc.h"
-#include "../../qbAPI/src/qbmove_communications.h"
+#include "../../../qbAPI/src/qbmove_communications.h"
 
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -41,8 +41,8 @@
 
 //===============================================================     parameters
 
-#define params_qbot_id(i)     ( mxGetPr( ssGetSFcnParam( S, 0 ) )[ \
-                                     i >= NUM_OF_QBOTS ? NUM_OF_QBOTS - 1 : i ] )
+#define params_qbot_id(i)       ( mxGetPr( ssGetSFcnParam( S, 0 ) )[ \
+                                    i >= NUM_OF_QBOTS ? NUM_OF_QBOTS - 1 : i ] )
 #define params_com_direction      ( (int) mxGetScalar( ssGetSFcnParam( S, 1 ) ) )
 #define params_qbot_mode          ( (int) mxGetScalar( ssGetSFcnParam( S, 2 ) ) )
 #define params_daisy_chaining  ( (bool) mxGetScalar( ssGetSFcnParam( S, 3 ) ) )
@@ -129,7 +129,6 @@ void    errorHandle(SimStruct *S, const int);
 
 int activation_state[255];
 
-
 //==============================================================================
 //                                                            mdlInitializeSizes
 //==============================================================================
@@ -174,6 +173,7 @@ static void mdlInitializeSizes( SimStruct *S )
                                  //    - activation on startup button
                                  //    - watchdog timer
                                  //    - measurement unity
+
 //===================================================================     inputs
 
     // Set number of inputs
@@ -190,7 +190,7 @@ static void mdlInitializeSizes( SimStruct *S )
         break;
     }
 
-    if (((params_com_direction == TX) | (params_com_direction == BOTH)) & (!PARAM_ACTIVE_STARTUP_FCN ))
+    if ( !PARAM_ACTIVE_STARTUP_FCN )
         i++;        
 
     if ( !ssSetNumInputPorts( S, i ) ) 
@@ -226,6 +226,17 @@ static void mdlInitializeSizes( SimStruct *S )
             ssSetInputPortDirectFeedThrough ( S, 3, 1                 );
             ssSetInputPortRequiredContiguous( S, 3, 1                 );
         }
+    }
+    else{ // RX or BOTH
+        if( !PARAM_ACTIVE_STARTUP_FCN )
+        {
+//////////////////////////////////////// 1 ) external activation ///////////////
+            ssSetInputPortWidth             ( S, 1, DYNAMICALLY_SIZED );
+            ssSetInputPortDataType          ( S, 1, SS_DOUBLE         );
+            ssSetInputPortDirectFeedThrough ( S, 1, 1                 );
+            ssSetInputPortRequiredContiguous( S, 1, 1                 );
+        }
+
     }
 
 

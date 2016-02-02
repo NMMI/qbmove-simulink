@@ -33,11 +33,16 @@ if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
           port_label( 'input', 3, 'pos.2' );
         end
     end
-
+    
     if ( strcmp(get_param( gcb, 'ACTIVATE'), 'off') )
       port_label( 'input', 4, 'activation' );
     end
+else
+  if ( strcmp(get_param( gcb, 'ACTIVATE'), 'off') )
+    port_label( 'input', 2, 'activation' );
+  end
 end
+
 %==================================================================      OUTPUTS
 if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'None' ) )
   if( strcmp( get_param( gcb, 'DAISY_CHAINING'), 'on') )
@@ -57,28 +62,43 @@ end
 %     Mask Enables depending on ACTIVE_COMM_DIRECTIONS (DEFAULT is CASE 'Both':)
 %     1   ID                        on
 %     2   ACTIVE_COMM_DIRECTIONS    on
-%     3   CONTROL_MODE                 on
+%     3   CONTROL_MODE              on
 %     4   DAISY_CHAINING            off
 %     5   MAX_ANG                   on
 %     6   SW_LIMIT                  off
 %     7   OFFSET                    off
+%     8   ACTIVATE                  on
+%     9   WDT                       off
+%     10  UNITY                     on
 % CASE 'Tx' : nothing to do
+if( strcmp( tmp_A_C_DIRS, 'Both' ) | strcmp( tmp_A_C_DIRS, 'Tx' ) )
+  tmp_MaskEnables{3} = 'on';
+  tmp_MaskEnables{6} = 'off';
+  tmp_MaskEnables{8} = 'on';
+  tmp_MaskEnables{9} = 'off';
+  tmp_MaskEnables{10} = 'on';
+end
+
 % CASE 'Rx' : set 'off' mask enables for SW_LIMIT and OFFSET
-% if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
-%   tmp_MaskEnables{6} = 'off';
-%   tmp_MaskEnables{7} = 'off';
-%   tmp_MaskEnables{8} = 'off';
-%   tmp_MaskEnables{9} = 'off';
-%   tmp_MaskEnables{10} = 'on';
-% end
-% % CASE 'None' : set 'off' mask enables for MAX_ANG, SW_LIMIT and OFFSET
-% if( strcmp( tmp_A_C_DIRS, 'None' ) )
-%   tmp_MaskEnables{5} = 'off';
-%   tmp_MaskEnables{6} = 'off';
-%   tmp_MaskEnables{7} = 'off';
-%   tmp_MaskEnables{8} = 'off';
-%   tmp_MaskEnables{9} = 'off';
-%   tmp_MaskEnables{10} = 'on';
-% end
-% set_param( gcb, 'MaskEnables', tmp_MaskEnables );
-% set_param( gcb, 'MaskVisibilities', tmp_MaskVisibilities );
+if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
+  tmp_MaskEnables{3} = 'off';
+  tmp_MaskEnables{6} = 'off';
+  tmp_MaskEnables{7} = 'off';
+  tmp_MaskEnables{8} = 'on';
+  tmp_MaskEnables{9} = 'off';
+  tmp_MaskEnables{10} = 'on';
+end
+
+% CASE 'None' : set 'off' mask enables for MAX_ANG, SW_LIMIT and OFFSET
+if( strcmp( tmp_A_C_DIRS, 'None' ) )
+  tmp_MaskEnables{3} = 'off';
+  tmp_MaskEnables{5} = 'off';
+  tmp_MaskEnables{6} = 'off';
+  tmp_MaskEnables{7} = 'off';
+  tmp_MaskEnables{8} = 'on';
+  tmp_MaskEnables{9} = 'off';
+  tmp_MaskEnables{10} = 'off';
+end
+
+set_param( gcb, 'MaskEnables', tmp_MaskEnables );
+set_param( gcb, 'MaskVisibilities', tmp_MaskVisibilities );
