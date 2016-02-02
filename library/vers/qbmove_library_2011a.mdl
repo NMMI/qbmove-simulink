@@ -14,9 +14,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "cp"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jan 15 12:35:34 2016"
-  RTWModifiedTimeStamp	  374762134
-  ModelVersionFormat	  "1.%<AutoIncrement:73>"
+  LastModifiedDate	  "Tue Feb 02 11:46:26 2016"
+  RTWModifiedTimeStamp	  376314386
+  ModelVersionFormat	  "1.%<AutoIncrement:74>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -626,15 +626,15 @@ Library {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "664"
+    ZoomFactor		    "498"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "17"
+    SIDHighWatermark	    "18"
     Block {
       BlockType		      S-Function
       Name		      "QB Move - Get Current"
       SID		      "14"
       Ports		      [1, 2]
-      Position		      [30, 83, 140, 127]
+      Position		      [30, 123, 140, 167]
       ZOrder		      -1
       DropShadow	      on
       AncestorBlock	      "qbmove_library/qbmove"
@@ -663,10 +663,38 @@ Library {
     }
     Block {
       BlockType		      S-Function
+      Name		      "QB Move - Get EMG"
+      SID		      "18"
+      Ports		      [1, 2]
+      Position		      [40, 17, 100, 48]
+      ZOrder		      73
+      FunctionName	      "qbemg"
+      Parameters	      "ID,DAISY_CHAINING"
+      MaskType		      "qb move"
+      MaskDescription	      "This block allows you to obtain the emg from the QB Move.\nIt needs an handle from QB Mov"
+      "e Init block.\n"
+      MaskPromptString	      "ID|Daisy Chaining Enable"
+      MaskStyleString	      "edit,checkbox"
+      MaskVariables	      "ID=@1;DAISY_CHAINING=@2;"
+      MaskTunableValueString  "on,off"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,on"
+      MaskVisibilityString    "on,off"
+      MaskToolTipString	      "on,on"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "65|off"
+      MaskTabNameString	      "Options,Options"
+    }
+    Block {
+      BlockType		      S-Function
       Name		      "Qb Move"
       SID		      "11"
       Ports		      [4, 4]
-      Position		      [180, 42, 285, 143]
+      Position		      [170, 47, 275, 148]
       ZOrder		      -2
       DropShadow	      on
       AncestorBlock	      "qbmove_library/qbmove"
@@ -705,7 +733,7 @@ Library {
       Name		      "Qb Move Init"
       SID		      "13"
       Ports		      [0, 1]
-      Position		      [30, 43, 110, 67]
+      Position		      [30, 83, 110, 107]
       ZOrder		      2
       DropShadow	      on
       NamePlacement	      "alternate"

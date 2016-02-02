@@ -13,8 +13,12 @@ function blkStruct = slblocks
 %     old_file = strcat(old_file, '.mdl');
 %     copyfile(old_file, 'qbmove_library.mdl');
 % end
-
-
-blkStruct.Name = 'Qb Move Library';
-blkStruct.OpenFcn = 'qbmove_library';
-blkStruct.MaskInitialization = '';
+    Browser.Library = 'qbmove_library';
+    Browser.Name = 'Qb Move Library';
+    
+    blkStruct.Browser = Browser;
+end
+% 
+% blkStruct.Name = 'Qb Move Library';
+% blkStruct.OpenFcn = 'qbmove_library';
+% blkStruct.MaskInitialization = '';
