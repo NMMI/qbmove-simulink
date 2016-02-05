@@ -70,7 +70,9 @@ The library can be used on various operating systems such as MacOS X,
 Windows, Linux... but you need to recompile it for your system.
 
 [WARNING:   Matlab version supported are from 2014a up to 2015b
-            Matlab bug advised, as soon as possible problem will be fixed]
+            Matlab bug advised, as soon as possible problem will be fixed
+            Previous Matlab versions can download: https://github.com/qbrobotics/qbmove_simulink/commit/9cd93e137cd21c2b56a822ea5e8a742032f01692
+            ]
 
 1.  Move your position in `qbmove_simulink`,type install and press return. 
     It will install the library depending on your MATLAB configuration and 
