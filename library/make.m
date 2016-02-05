@@ -1,4 +1,4 @@
-if exist('bin', 'file')
+if exist(strcat(pwd, '/bin'), 'file')
     rmdir('bin', 's');
 else
 	mkdir(pwd, 'bin');

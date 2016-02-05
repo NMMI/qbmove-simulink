@@ -69,6 +69,9 @@ folder. Before compiling be sure to have a folder tree like that (be sure to rem
 The library can be used on various operating systems such as MacOS X,
 Windows, Linux... but you need to recompile it for your system.
 
+[WARNING:   Matlab version supported are from 2014a up to 2015b
+            Matlab bug advised, as soon as possible problem will be fixed]
+
 1.  Move your position in `qbmove_simulink`,type install and press return. 
     It will install the library depending on your MATLAB configuration and 
     set necessary path.
