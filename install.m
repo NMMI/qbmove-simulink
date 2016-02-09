@@ -29,7 +29,7 @@ old_file = strcat(old_file, ver);
 new_file = strcat('', lib);
 new_file = strcat(new_file, 'qbmove_library');
 
-if (str2double(ver(1:end-1)) > 2013)
+if ( (str2double(ver(1:end-1)) >= 2013) || ( str2double(ver(1:end-1)) == 2012 && (ver(end) == 'b') ) )
     old_file = strcat(old_file, '.slx');
     new_file = strcat(new_file, '.slx');
     
@@ -59,7 +59,7 @@ new_file = strcat('', lib_pac);
 new_file = strcat(new_file, 'QB_pacer_lib');
 
     
-if (str2double(ver(1:end-1)) > 2013)
+if ( (str2double(ver(1:end-1)) >= 2013) || ( str2double(ver(1:end-1)) == 2012 && (ver(end) == 'b') ) )
     old_file = strcat(old_file, '.slx');
     new_file = strcat(new_file, '.slx');
     

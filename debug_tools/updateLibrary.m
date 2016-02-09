@@ -10,6 +10,22 @@ clc
 
 cd ..
 
+% Eliminate old versions file
+
+if exist([pwd '/library/vers'], 'dir')
+    rmdir([pwd '/library/vers'], 's');
+end
+
+if exist([pwd '/library_pacer/vers'], 'dir')
+    rmdir([pwd '/library_pacer/vers'], 's');
+end
+
+% Create version folders
+
+mkdir([pwd '/library/vers']);
+
+mkdir([pwd '/library_pacer/vers']);
+
 % QB Library
 
 folderName = 'library/';
