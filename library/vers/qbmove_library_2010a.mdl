@@ -8,15 +8,15 @@ Library {
   OverrideScopeRefreshTime off
   DisableAllScopes	  off
   MaxMDLFileLineLength	  120
-  Created		  "Tue Oct 25 08:33:49 2011"
+  Created		  "Tue Oct 25 17:33:49 2011"
   Creator		  "Administrator"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "cp"
+  LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Feb 02 11:46:27 2016"
-  RTWModifiedTimeStamp	  376314387
-  ModelVersionFormat	  "1.%<AutoIncrement:74>"
+  LastModifiedDate	  "Fri May 13 16:01:46 2016"
+  RTWModifiedTimeStamp	  385056106
+  ModelVersionFormat	  "1.%<AutoIncrement:75>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -198,7 +198,7 @@ Library {
 	  LifeSpan		  "inf"
 	  MaxStackSize		  "Inherit from target"
 	  BufferReusableBoundary  on
-	  SimCompilerOptimization Off
+	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
 	  UseIntDivNetSlope	  off
 	  EnforceIntegerDowncast  on
@@ -230,7 +230,6 @@ Library {
 	  MaxConsecutiveZCsMsg	  "error"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
-	  DiscreteInheritContinuousMsg "warning"
 	  MultiTaskDSMMsg	  "error"
 	  MultiTaskCondExecSysMsg "error"
 	  MultiTaskRateTransMsg	  "error"
@@ -320,7 +319,6 @@ Library {
 	Simulink.SFSimCC {
 	  $ObjectID		  13
 	  Version		  "1.10.0"
-	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
 	  SimCtrlC		  on
 	  SimIntegrity		  on
@@ -361,13 +359,6 @@ Library {
 	  TLCAssert		  off
 	  RTWUseLocalCustomCode	  off
 	  RTWUseSimCustomCode	  off
-	  CustomSourceCode	  ""
-	  CustomHeaderCode	  ""
-	  CustomInclude		  ""
-	  CustomSource		  ""
-	  CustomLibrary		  ""
-	  CustomInitializer	  ""
-	  CustomTerminator	  ""
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  TargetLang		  "C"
@@ -377,7 +368,7 @@ Library {
 	  GenerateTraceReportSl	  off
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
-	  RTWCompilerOptimization Off
+	  RTWCompilerOptimization "Off"
 	  RTWCustomCompilerOptimizations ""
 	  CheckMdlBeforeBuild	  "Off"
 	  Array {
@@ -520,7 +511,7 @@ Library {
 	  }
 	}
 	hdlcoderui.hdlcc {
-	  $ObjectID		  17
+	  $ObjectID		  18
 	  Version		  "1.10.0"
 	  Description		  "HDL Coder custom configuration component"
 	  Name			  "HDL Coder"
@@ -577,8 +568,6 @@ Library {
       FunctionName	      "system"
       SFunctionModules	      "''"
       PortCounts	      "[]"
-      SFunctionDeploymentMode off
-      EnableBusSupport	      off
     }
   }
   System {
@@ -609,6 +598,8 @@ Library {
       LibraryVersion	      "1.37"
       FunctionName	      "qbcurrent"
       Parameters	      "ID, DAISY_CHAINING"
+      SFunctionDeploymentMode off
+      EnableBusSupport	      off
       MaskType		      "qb move"
       MaskDescription	      "This block allows you to obtain the currents from the QB Move.\nIt needs an handle from Q"
       "B Move Init block.\n"
@@ -637,6 +628,8 @@ Library {
       Position		      [40, 17, 100, 48]
       FunctionName	      "qbemg"
       Parameters	      "ID,DAISY_CHAINING"
+      SFunctionDeploymentMode off
+      EnableBusSupport	      off
       MaskType		      "qb move"
       MaskDescription	      "This block allows you to obtain the emg from the QB Move.\nIt needs an handle from QB Mov"
       "e Init block.\n"
@@ -668,6 +661,8 @@ Library {
       FunctionName	      "qbmove"
       Parameters	      "ID, ACTIVE_COMM_DIRECTIONS, CONTROL_MODE, DAISY_CHAINING, MAX_ANG, SW_LIMIT, OFFSET,ACTIVATE,W"
       "DT,UNITY"
+      SFunctionDeploymentMode off
+      EnableBusSupport	      off
       MaskType		      "qb move"
       MaskDescription	      "This block provides a interface to the Qb Move.\nIt needs an handle from Qb Move Init blo"
       "ck.\n"
@@ -706,6 +701,8 @@ Library {
       LibraryVersion	      "*1.43"
       FunctionName	      "qbmoveInit"
       Parameters	      "double(NUMBER_OF_COM), double(BAUD_RATE_COM)"
+      SFunctionDeploymentMode off
+      EnableBusSupport	      off
       MaskType		      "qb Init - ISS"
       MaskDescription	      "qb devices initialization block."
       MaskPromptString	      "USB-ISS Virtual COM port number|Virtual COM Baud Rate"
@@ -713,7 +710,7 @@ Library {
       MaskVariables	      "NUMBER_OF_COM=@1;BAUD_RATE_COM=@2;"
       MaskTunableValueString  "off,off"
       MaskCallbackString      "|"
-      MaskEnableString	      "on,off"
+      MaskEnableString	      "on,on"
       MaskVisibilityString    "on,on"
       MaskToolTipString	      "on,on"
       MaskDisplay	      "% image( imread('bridge.jpg') )\nport_label( 'output', 1, 'handle' );"

@@ -8,14 +8,14 @@ Library {
   OverrideScopeRefreshTime off
   DisableAllScopes	  off
   MaxMDLFileLineLength	  120
-  Created		  "Tue Oct 19 09:12:24 2010"
+  Created		  "Tue Oct 19 18:12:24 2010"
   Creator		  "gvallabh"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "cp"
+  LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jan 15 12:35:40 2016"
-  RTWModifiedTimeStamp	  374762140
+  LastModifiedDate	  "Fri May 13 16:01:52 2016"
+  RTWModifiedTimeStamp	  385056112
   ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
@@ -197,7 +197,7 @@ Library {
 	  LifeSpan		  "inf"
 	  MaxStackSize		  "Inherit from target"
 	  BufferReusableBoundary  on
-	  SimCompilerOptimization Off
+	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
 	  UseIntDivNetSlope	  off
 	  EnforceIntegerDowncast  on
@@ -229,7 +229,6 @@ Library {
 	  MaxConsecutiveZCsMsg	  "error"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
-	  DiscreteInheritContinuousMsg "warning"
 	  MultiTaskDSMMsg	  "error"
 	  MultiTaskCondExecSysMsg "error"
 	  MultiTaskRateTransMsg	  "error"
@@ -319,7 +318,6 @@ Library {
 	Simulink.SFSimCC {
 	  $ObjectID		  13
 	  Version		  "1.10.0"
-	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
 	  SimCtrlC		  on
 	  SimIntegrity		  on
@@ -359,13 +357,6 @@ Library {
 	  TLCAssert		  off
 	  RTWUseLocalCustomCode	  off
 	  RTWUseSimCustomCode	  off
-	  CustomSourceCode	  ""
-	  CustomHeaderCode	  ""
-	  CustomInclude		  ""
-	  CustomSource		  ""
-	  CustomLibrary		  ""
-	  CustomInitializer	  ""
-	  CustomTerminator	  ""
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  TargetLang		  "C"
@@ -375,7 +366,7 @@ Library {
 	  GenerateTraceReportSl	  off
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
-	  RTWCompilerOptimization Off
+	  RTWCompilerOptimization "Off"
 	  RTWCustomCompilerOptimizations ""
 	  CheckMdlBeforeBuild	  "Off"
 	  Array {

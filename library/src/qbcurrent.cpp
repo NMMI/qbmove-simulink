@@ -292,11 +292,11 @@ static void mdlOutputs( SimStruct *S, int_T tid )
      {
          out_current_a[i] = (double) currents[0];
          out_current_b[i] = (double) currents[1];
-
-
-         dwork_out(i)[0] = out_current_a[i];
-         dwork_out(i)[1] = out_current_b[i];
      }
+
+     dwork_out(i)[0] = out_current_a[i];
+     dwork_out(i)[1] = out_current_b[i];
+     
     }
 
 }

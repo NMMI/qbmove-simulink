@@ -9,14 +9,14 @@ Library {
   DisableAllScopes	  off
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
-  Created		  "Tue Oct 19 09:12:24 2010"
+  Created		  "Tue Oct 19 18:12:24 2010"
   Creator		  "gvallabh"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "cp"
+  LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Jan 15 12:35:39 2016"
-  RTWModifiedTimeStamp	  374762139
+  LastModifiedDate	  "Fri May 13 16:01:51 2016"
+  RTWModifiedTimeStamp	  385056111
   ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
@@ -203,7 +203,7 @@ Library {
 	  LifeSpan		  "inf"
 	  MaxStackSize		  "Inherit from target"
 	  BufferReusableBoundary  on
-	  SimCompilerOptimization Off
+	  SimCompilerOptimization "Off"
 	  AccelVerboseBuild	  off
 	  UseIntDivNetSlope	  off
 	}
@@ -236,7 +236,6 @@ Library {
 	  IgnoredZcDiagnostic	  "warning"
 	  SolverPrmCheckMsg	  "warning"
 	  InheritedTsInSrcMsg	  "warning"
-	  DiscreteInheritContinuousMsg "warning"
 	  MultiTaskDSMMsg	  "error"
 	  MultiTaskCondExecSysMsg "error"
 	  MultiTaskRateTransMsg	  "error"
@@ -347,7 +346,6 @@ Library {
 	Simulink.SFSimCC {
 	  $ObjectID		  13
 	  Version		  "1.11.1"
-	  SFSimOverflowDetection  on
 	  SFSimEcho		  on
 	  SimCtrlC		  on
 	  SimIntegrity		  on
@@ -388,13 +386,6 @@ Library {
 	  TLCAssert		  off
 	  RTWUseLocalCustomCode	  off
 	  RTWUseSimCustomCode	  off
-	  CustomSourceCode	  ""
-	  CustomHeaderCode	  ""
-	  CustomInclude		  ""
-	  CustomSource		  ""
-	  CustomLibrary		  ""
-	  CustomInitializer	  ""
-	  CustomTerminator	  ""
 	  IncludeHyperlinkInReport off
 	  LaunchReport		  off
 	  TargetLang		  "C"
@@ -405,7 +396,7 @@ Library {
 	  GenerateTraceReportSf	  off
 	  GenerateTraceReportEml  off
 	  GenerateCodeMetricsReport off
-	  RTWCompilerOptimization Off
+	  RTWCompilerOptimization "Off"
 	  RTWCustomCompilerOptimizations ""
 	  CheckMdlBeforeBuild	  "Off"
 	  Array {
@@ -666,7 +657,6 @@ Library {
       DataTypeOverrideAppliesTo	"AllNumericTypes"
       MinMaxOverflowLogging   "UseLocalSettings"
       SFBlockType	      "NONE"
-      Variant		      off
       GeneratePreprocessorConditionals off
     }
     Block {
@@ -722,6 +712,7 @@ Library {
       BackgroundColor	      "yellow"
       DropShadow	      on
       RequestExecContextInheritance off
+      Variant		      off
       MaskType		      "Almost Real-Time Velocity"
       MaskDescription	      "Uses Real-Time Pacer to compute an almost real-time velocity.\n\nPOS = position to use as"
       " reference\nVEL = velocity (pos unit/second)"
