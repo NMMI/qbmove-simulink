@@ -16,9 +16,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri May 13 16:01:45 2016"
-  RTWModifiedTimeStamp	  385056105
-  ModelVersionFormat	  "1.%<AutoIncrement:75>"
+  LastModifiedDate	  "Thu May 19 12:07:09 2016"
+  RTWModifiedTimeStamp	  385560429
+  ModelVersionFormat	  "1.%<AutoIncrement:76>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -621,9 +621,9 @@ Library {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "498"
+    ZoomFactor		    "506"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "18"
+    SIDHighWatermark	    "19"
     Block {
       BlockType		      S-Function
       Name		      "QB Move - Get Current"

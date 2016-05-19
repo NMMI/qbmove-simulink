@@ -703,9 +703,89 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 }
 #endif /* MDL_UPDATE */
 
-static void mdlOutputs( SimStruct *S, int_T tid ){
+static void mdlOutputs( SimStruct *S, int_T tid )
+{
+//     short int measurements[3];
+//     int8_T qbot_id;                                // qbot id's
+//     comm_settings comm_settings_t;
+//     char aux_char;
+//     int i;
+//     double meas_unity;
+//     double shalf_dir = 1;
+    
+//     // Change Unity of Measurement
 
+//     switch(PARAM_UNITY_FCN){
+//         case DEGREES:
+//             meas_unity = ANG_TO_DEG;
+//             break;
+//         case RADIANTS:
+//             meas_unity = ANG_TO_DEG / RAD_TO_DEG;
+//             break;
+//         default: // TICK
+//             meas_unity = 1;
+//     }
+
+// //=============================     should an output handle appear in the block?
+
+//     if(params_daisy_chaining) 
+//         showOutputHandle(S);
+
+// //====================================================     should we keep going?
+
+//     #if defined(_WIN32) || defined(_WIN64)
+//         if(in_handle == INVALID_HANDLE_VALUE) return;
+//     #else
+//         if(in_handle == -1) return;
+//     #endif
+
+//     // If we do not need to update outputs, return
+//     if( (params_com_direction != RX) & (params_com_direction != BOTH) )
+//         return;
+
+// //==========================================     asking positions for each motor
+
+//     //RS485InitCommSettings(&comm_settings_t);
+//     comm_settings_t.file_handle = in_handle;
+
+//     for(i = 0; i < NUM_OF_QBOTS; i++)
+//     {
+// //============================================================     qbot ID check
+
+//         qbot_id = params_qbot_id(i);
+
+//         if (qbot_id < 0){
+//             shalf_dir = -1;
+//             qbot_id = abs(qbot_id);
+//         }
+//         else
+//             shalf_dir = 1;
+
+
+//         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
+//         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
+
+//         out_pos_a[i]    = dwork_out(i)[0];
+//         out_pos_b[i]    = dwork_out(i)[1];
+//         out_pos_link[i] = dwork_out(i)[2];
+
+//         if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
+//         {
+//             out_pos_a[i]       = ((double) measurements[0]) * meas_unity * shalf_dir;
+//             out_pos_b[i]       = ((double) measurements[1]) * meas_unity * shalf_dir;
+//             out_pos_link[i]    = ((double) measurements[2]) * meas_unity * shalf_dir;
+           
+//         } else
+//             out_debug[i] += 1;
+
+//         dwork_out(i)[0] = out_pos_a[i];
+//         dwork_out(i)[1] = out_pos_b[i];
+//         dwork_out(i)[2] = out_pos_link[i];
+        
+//     }
 }
+
+
 
 
 //==============================================================================
