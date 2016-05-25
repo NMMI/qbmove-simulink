@@ -68,14 +68,14 @@ end
 %     6   SW_LIMIT                  off
 %     7   OFFSET                    off
 %     8   ACTIVATE                  on
-%     9   WDT                       off
+%     9   WDT                       on
 %     10  UNITY                     on
 % CASE 'Tx' : nothing to do
 if( strcmp( tmp_A_C_DIRS, 'Both' ) | strcmp( tmp_A_C_DIRS, 'Tx' ) )
   tmp_MaskEnables{3} = 'on';
   tmp_MaskEnables{6} = 'off';
   tmp_MaskEnables{8} = 'on';
-  tmp_MaskEnables{9} = 'off';
+  tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
 end
 
@@ -85,7 +85,7 @@ if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
   tmp_MaskEnables{6} = 'off';
   tmp_MaskEnables{7} = 'off';
   tmp_MaskEnables{8} = 'on';
-  tmp_MaskEnables{9} = 'off';
+  tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
 end
 
@@ -96,7 +96,7 @@ if( strcmp( tmp_A_C_DIRS, 'None' ) )
   tmp_MaskEnables{6} = 'off';
   tmp_MaskEnables{7} = 'off';
   tmp_MaskEnables{8} = 'on';
-  tmp_MaskEnables{9} = 'off';
+  tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'off';
 end
 

@@ -1,7 +1,6 @@
 Library {
   Name			  "qbmove_library_2010a"
   Version		  7.5
-  MdlSubVersion		  0
   SavedCharacterEncoding  "UTF-8"
   LibraryType		  "BlockLibrary"
   ScopeRefreshTime	  0.035000
@@ -14,9 +13,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu May 19 12:07:10 2016"
-  RTWModifiedTimeStamp	  385560430
-  ModelVersionFormat	  "1.%<AutoIncrement:76>"
+  LastModifiedDate	  "Wed May 25 10:12:59 2016"
+  RTWModifiedTimeStamp	  386071979
+  ModelVersionFormat	  "1.%<AutoIncrement:77>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -461,7 +460,6 @@ Library {
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
-	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
@@ -676,7 +674,7 @@ Library {
       "FSET=@7;ACTIVATE=@8;WDT=@9;UNITY=@10;"
       MaskTunableValueString  "on,on,on,off,on,off,off,on,on,on"
       MaskCallbackString      "|||||||||"
-      MaskEnableString	      "on,on,on,off,off,off,off,on,off,on"
+      MaskEnableString	      "on,on,on,off,off,off,off,on,on,on"
       MaskVisibilityString    "on,on,on,off,off,off,off,on,on,on"
       MaskToolTipString	      "on,on,on,on,on,on,on,on,on,on"
       MaskInitialization      "\n\n"

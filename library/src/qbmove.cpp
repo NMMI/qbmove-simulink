@@ -64,7 +64,7 @@
 #define in_ref_a  ( (const real_T *)ssGetInputPortSignal(   S, 1 ) )
 #define in_ref_b  ( (const real_T *)ssGetInputPortSignal(   S, 2 ) )
 
-#define in_ref_activation  ( (const real_T *)ssGetInputPortSignal(   S, 3 ) )
+#define in_ref_activation(i)  ( (const real_T *)ssGetInputPortSignal(   S, i ) ) 
 
 //==================================================================     outputs
 
@@ -472,7 +472,7 @@ static void mdlStart( SimStruct *S )
         activation(S, ON);       
     
     // Disable Activation on startup Flag and Setting ID
-    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','off','on'})");
+    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on','on'})");
 
     if (NUM_OF_QBOTS > 255)
         return errorHandle(S, REACH_QBOTS_MAX);
@@ -514,6 +514,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 {
     double   auxa, auxb;
     char aux_char;
+    int rx_tx; // Dynamic size of in_ref_activation
 
     // Measurements unity
     double meas_unity = 1;
@@ -533,7 +534,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     }
 
     int16_T  refs[2];                           // auxiliary value
-    int8_T  qbot_id;                           // qbot id's
+    int8_T  qbot_id;                            // qbot id's
     int16_T  ref_a, ref_b;                      // reference values (16 bits)
     int16_T measurements[3];
 
@@ -553,28 +554,31 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     if(params_daisy_chaining) 
         showOutputHandle(S);
 
-    if( (params_com_direction != TX) & (params_com_direction != BOTH) ) 
-        return;
-
 //===========================================     sending command for each motor
 
     comm_settings_t.file_handle = in_handle;
+    
+    if( (params_com_direction == TX) || (params_com_direction == BOTH) ) 
+        rx_tx = 3;
+    else
+        rx_tx = 1;
 
     // Activation after start up    
     if (!PARAM_ACTIVE_STARTUP_FCN){
         for (i = 0; i < NUM_OF_QBOTS; i++){
-            if ((activation_state[i] == 0) && ((int) in_ref_activation[i] != 0))
+            if ((activation_state[i] == 0) && ((int) in_ref_activation(rx_tx)[i] != 0))
                     activation(S, ON, i);
             else{
-                if ((activation_state[i] != 0) && ((int) in_ref_activation[i] == 0))
+                if ((activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0))
                     activation(S, OFF, i);
             }
         }
         // Update old value
 
         for (i = 0; i < NUM_OF_QBOTS; i++)
-            activation_state[i] = (int) in_ref_activation[i];
+            activation_state[i] = (int) in_ref_activation(rx_tx)[i];
     }
+    
 
 //==========================================     asking positions for each motor
 
@@ -595,198 +599,100 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
 
-        out_pos_a[i]    = dwork_out(i)[0];
-        out_pos_b[i]    = dwork_out(i)[1];
-        out_pos_link[i] = dwork_out(i)[2];
+        // Read Measurements
 
-        if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
-        {
-            out_pos_a[i]       = shalf_dir * ((double) measurements[0]) / meas_unity;
-            out_pos_b[i]       = shalf_dir * ((double) measurements[1]) / meas_unity;
-            out_pos_link[i]    = shalf_dir * ((double) measurements[2]) / meas_unity;
-           
-        } else
-            out_debug[i] += 1;
+        if( (params_com_direction == RX) || (params_com_direction == BOTH) ){
 
-        dwork_out(i)[0] = out_pos_a[i];
-        dwork_out(i)[1] = out_pos_b[i];
-        dwork_out(i)[2] = out_pos_link[i];
+            out_pos_a[i]    = dwork_out(i)[0];
+            out_pos_b[i]    = dwork_out(i)[1];
+            out_pos_link[i] = dwork_out(i)[2];
+
+            if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
+            {
+                out_pos_a[i]       = shalf_dir * ((double) measurements[0]) / meas_unity;
+                out_pos_b[i]       = shalf_dir * ((double) measurements[1]) / meas_unity;
+                out_pos_link[i]    = shalf_dir * ((double) measurements[2]) / meas_unity;
+               
+            } else
+                out_debug[i] += 1;
+
+            dwork_out(i)[0] = out_pos_a[i];
+            dwork_out(i)[1] = out_pos_b[i];
+            dwork_out(i)[2] = out_pos_link[i];
+        }
         
- 
-//==============================================     input references convertion
-// - if input reference width is to small, use the last value
-// - check minimum and maximum limits
-// - finish conversion to a 16 bits word
+        // Set References
 
-// ////////////////////////////////   reference A    ///////////////////////////////
-//      aux = in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i];
-// ////////////////////////////////   adding offset to eq.pos. only ////////////
-//
-//      refs[0]  = (int16_T)( aux );
-//
-// //====================================================================       TODO
-// //                                                         Insert here the use of
-// //                                                         params_sw_lim_range
-// //                                                         and
-// //                                                         params_joint_offset.
-//
-// ////////////////////////////////   reference B    ///////////////////////////////
-//
-//      aux = in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i];
-//      ref_b = (int16_T)( aux );
-//      refs[1] = (int16_T)( aux );
-//
-//         commSetInputs(&comm_settings_t, qbot_id, refs);
+        if( (params_com_direction == TX) || (params_com_direction == BOTH) ) {
+            switch( params_qbot_mode )
+            {
+                case PRIME_MOVERS_POS:
 
+                    auxa = (int)( (shalf_dir * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity) );
+                    auxb = (int)( (shalf_dir * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
 
-        switch( params_qbot_mode )
-        {
-            case PRIME_MOVERS_POS:
+                    refs[0] = (int16_T)( auxa );
+                    refs[1] = (int16_T)( auxb );
+                    
+                    commSetInputs(&comm_settings_t, qbot_id, refs);
+                    break;
 
-                auxa = (int)( (shalf_dir * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity) );
-                auxb = (int)( (shalf_dir * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
+                case EQ_POS_AND_PRESET: 
 
-                refs[0] = (int16_T)( auxa );
-                refs[1] = (int16_T)( auxb );
-                
-                commSetInputs(&comm_settings_t, qbot_id, refs);
-                break;
+                    auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
+                    auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
 
-            case EQ_POS_AND_PRESET: 
+                    if (auxb < 0) {
+                        auxb = 0;
+                    } else if (auxb > MAX_STIFF) {
+                        auxb = MAX_STIFF;
+                    }
 
-                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
-                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
+                    if ((auxa + auxb) > MAX_POS) {
+                        auxa = MAX_POS - auxb;
+                    } else if ((auxa - auxb) < -MAX_POS) {
+                        auxa = -MAX_POS + auxb;
+                    }
 
-                if (auxb < 0) {
-                    auxb = 0;
-                } else if (auxb > MAX_STIFF) {
-                    auxb = MAX_STIFF;
-                }
+                    refs[0] = (int16_T)( auxa + auxb);
+                    refs[1] = (int16_T)( auxa - auxb);
+                    
+                    commSetInputs(&comm_settings_t, qbot_id, refs);
+                    break;
+                    
+                case EQ_POS_AND_STIFF_PERC:
 
-                if ((auxa + auxb) > MAX_POS) {
-                    auxa = MAX_POS - auxb;
-                } else if ((auxa - auxb) < -MAX_POS) {
-                    auxa = -MAX_POS + auxb;
-                }
+                    auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
+                    auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * PERC_TO_NUM) );
 
-                refs[0] = (int16_T)( auxa + auxb);
-                refs[1] = (int16_T)( auxa - auxb);
-                
-                commSetInputs(&comm_settings_t, qbot_id, refs);
-                break;
-                
-            case EQ_POS_AND_STIFF_PERC:
-
-                auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
-                auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * PERC_TO_NUM) );
-
-                if (auxa > MAX_POS) {
-                    auxa = MAX_POS;
-                } else if (auxa < -MAX_POS) {
-                    auxa = -MAX_POS;
-                }
-                
-                if (auxb > 32767) {
-                    auxb = 32767;
-                } else if (auxb <= 0) {
-                    auxb = 0;
-                }
-                
-                refs[0] = (int16_T)(auxa);
-                refs[1] = (int16_T)(auxb);
-                
-                commSetPosStiff(&comm_settings_t, qbot_id, refs);
-                
-                break;
+                    if (auxa > MAX_POS) {
+                        auxa = MAX_POS;
+                    } else if (auxa < -MAX_POS) {
+                        auxa = -MAX_POS;
+                    }
+                    
+                    if (auxb > 32767) {
+                        auxb = 32767;
+                    } else if (auxb <= 0) {
+                        auxb = 0;
+                    }
+                    
+                    refs[0] = (int16_T)(auxa);
+                    refs[1] = (int16_T)(auxb);
+                    
+                    commSetPosStiff(&comm_settings_t, qbot_id, refs);
+                    
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
 #endif /* MDL_UPDATE */
 
-static void mdlOutputs( SimStruct *S, int_T tid )
-{
-//     short int measurements[3];
-//     int8_T qbot_id;                                // qbot id's
-//     comm_settings comm_settings_t;
-//     char aux_char;
-//     int i;
-//     double meas_unity;
-//     double shalf_dir = 1;
-    
-//     // Change Unity of Measurement
-
-//     switch(PARAM_UNITY_FCN){
-//         case DEGREES:
-//             meas_unity = ANG_TO_DEG;
-//             break;
-//         case RADIANTS:
-//             meas_unity = ANG_TO_DEG / RAD_TO_DEG;
-//             break;
-//         default: // TICK
-//             meas_unity = 1;
-//     }
-
-// //=============================     should an output handle appear in the block?
-
-//     if(params_daisy_chaining) 
-//         showOutputHandle(S);
-
-// //====================================================     should we keep going?
-
-//     #if defined(_WIN32) || defined(_WIN64)
-//         if(in_handle == INVALID_HANDLE_VALUE) return;
-//     #else
-//         if(in_handle == -1) return;
-//     #endif
-
-//     // If we do not need to update outputs, return
-//     if( (params_com_direction != RX) & (params_com_direction != BOTH) )
-//         return;
-
-// //==========================================     asking positions for each motor
-
-//     //RS485InitCommSettings(&comm_settings_t);
-//     comm_settings_t.file_handle = in_handle;
-
-//     for(i = 0; i < NUM_OF_QBOTS; i++)
-//     {
-// //============================================================     qbot ID check
-
-//         qbot_id = params_qbot_id(i);
-
-//         if (qbot_id < 0){
-//             shalf_dir = -1;
-//             qbot_id = abs(qbot_id);
-//         }
-//         else
-//             shalf_dir = 1;
-
-
-//         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
-//         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
-
-//         out_pos_a[i]    = dwork_out(i)[0];
-//         out_pos_b[i]    = dwork_out(i)[1];
-//         out_pos_link[i] = dwork_out(i)[2];
-
-//         if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
-//         {
-//             out_pos_a[i]       = ((double) measurements[0]) * meas_unity * shalf_dir;
-//             out_pos_b[i]       = ((double) measurements[1]) * meas_unity * shalf_dir;
-//             out_pos_link[i]    = ((double) measurements[2]) * meas_unity * shalf_dir;
-           
-//         } else
-//             out_debug[i] += 1;
-
-//         dwork_out(i)[0] = out_pos_a[i];
-//         dwork_out(i)[1] = out_pos_b[i];
-//         dwork_out(i)[2] = out_pos_link[i];
-        
-//     }
+static void mdlOutputs( SimStruct *S, int_T tid ){ 
 }
-
-
-
 
 //==============================================================================
 //                                                                  mdlTerminate

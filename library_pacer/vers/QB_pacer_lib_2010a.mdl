@@ -1,7 +1,6 @@
 Library {
   Name			  "QB_pacer_lib_2010a"
   Version		  7.5
-  MdlSubVersion		  0
   SavedCharacterEncoding  "UTF-8"
   LibraryType		  "BlockLibrary"
   ScopeRefreshTime	  0.035000
@@ -14,8 +13,8 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Thu May 19 12:07:16 2016"
-  RTWModifiedTimeStamp	  385560436
+  LastModifiedDate	  "Wed May 25 10:13:08 2016"
+  RTWModifiedTimeStamp	  386071988
   ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
@@ -457,7 +456,6 @@ Library {
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
-	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
@@ -562,11 +560,11 @@ Library {
       LatchByDelayingOutsideSignal off
       LatchInputForFeedbackSignals off
       Interpolate	      on
-      UseBusObject	      off
-      BusObject		      "BusObject"
       DataType		      "auto"
       OutDataType	      "fixdt(1,16,0)"
       OutScaling	      "[]"
+      UseBusObject	      off
+      BusObject		      "BusObject"
     }
     Block {
       BlockType		      M-S-Function
@@ -589,11 +587,11 @@ Library {
       SourceOfInitialOutputValue "Dialog"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
-      UseBusObject	      off
-      BusObject		      "BusObject"
       DataType		      "auto"
       OutDataType	      "fixdt(1,16,0)"
       OutScaling	      "[]"
+      UseBusObject	      off
+      BusObject		      "BusObject"
     }
     Block {
       BlockType		      Product
@@ -631,6 +629,7 @@ Library {
       SimViewingDevice	      off
       DataTypeOverride	      "UseLocalSettings"
       MinMaxOverflowLogging   "UseLocalSettings"
+      TreatAsGroupedWhenPropagatingVariantConditions on
     }
     Block {
       BlockType		      Sum
@@ -900,7 +899,7 @@ Library {
     }
     Annotation {
       Name		      "QB Pacer Library"
-      Position		      [173, 31]
+      Position		      [172, 31]
       FontName		      "Arial"
       FontSize		      12
       FontWeight	      "bold"
