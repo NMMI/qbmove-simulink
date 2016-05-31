@@ -1,6 +1,7 @@
 Library {
   Name			  "QB_pacer_lib_2011a"
   Version		  7.7
+  MdlSubVersion		  0
   SavedCharacterEncoding  "UTF-8"
   LibraryType		  "BlockLibrary"
   ScopeRefreshTime	  0.035000
@@ -13,8 +14,8 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed May 25 10:13:06 2016"
-  RTWModifiedTimeStamp	  386071986
+  LastModifiedDate	  "Tue May 31 11:16:16 2016"
+  RTWModifiedTimeStamp	  386594176
   ModelVersionFormat	  "1.%<AutoIncrement:13>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
@@ -485,6 +486,7 @@ Library {
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
+	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
@@ -650,7 +652,6 @@ Library {
       DataTypeOverrideAppliesTo	"AllNumericTypes"
       MinMaxOverflowLogging   "UseLocalSettings"
       GeneratePreprocessorConditionals off
-      TreatAsGroupedWhenPropagatingVariantConditions on
     }
     Block {
       BlockType		      Sum
@@ -928,7 +929,7 @@ Library {
     }
     Annotation {
       Name		      "QB Pacer Library"
-      Position		      [172, 31]
+      Position		      [173, 31]
       FontName		      "Arial"
       FontSize		      12
       FontWeight	      "bold"

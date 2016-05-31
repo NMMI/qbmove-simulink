@@ -1,6 +1,7 @@
 Library {
   Name			  "qbmove_library_2009b"
   Version		  7.4
+  MdlSubVersion		  0
   SavedCharacterEncoding  "UTF-8"
   LibraryType		  "BlockLibrary"
   ScopeRefreshTime	  0.035000
@@ -13,9 +14,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "qbdell"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed May 25 10:12:59 2016"
-  RTWModifiedTimeStamp	  386071979
-  ModelVersionFormat	  "1.%<AutoIncrement:77>"
+  LastModifiedDate	  "Tue May 31 11:16:13 2016"
+  RTWModifiedTimeStamp	  386594173
+  ModelVersionFormat	  "1.%<AutoIncrement:82>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -449,6 +450,7 @@ Library {
 	      }
 	      TargetFcnLib	      "ansi_tfl_table_tmw.mat"
 	      TargetLibSuffix	      ""
+	      TargetPreCompLibLocation ""
 	      TargetFunctionLibrary   "None"
 	      UtilityFuncGeneration   "Auto"
 	      ERTMultiwordTypeDef     "System defined"
@@ -559,7 +561,7 @@ Library {
   }
   System {
     Name		    "qbmove_library_2009b"
-    Location		    [0, 24, 1920, 1080]
+    Location		    [290, 14, 1290, 814]
     Open		    off
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -571,15 +573,47 @@ Library {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "506"
+    ZoomFactor		    "208"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    19
+    SIDHighWatermark	    20
+    Block {
+      BlockType		      S-Function
+      Name		      "QB Move - Get Curr and Meas"
+      SID		      20
+      Ports		      [4, 6]
+      Position		      [185, 142, 280, 283]
+      FunctionName	      "qbmeascurr"
+      Parameters	      "ID, ACTIVE_COMM_DIRECTIONS, CONTROL_MODE, DAISY_CHAINING, MAX_ANG, SW_LIMIT, OFFSET,ACTIVATE,W"
+      "DT,UNITY"
+      SFunctionDeploymentMode off
+      EnableBusSupport	      off
+      MaskPromptString	      "ID|Communication Directions|Input Type|Daisy Chaining Enable|Angle Range|Software Limita"
+      "tion of the Equilibrium Position Range|Offset to the Equilibrium Position|Activation on Start UP|Watchdog Timer|"
+      "Unity"
+      MaskStyleString	      "edit,popup(Rx|Tx|Both|None),popup(Prime Movers Positions|Equilibrium Position and Stiffne"
+      "ss Preset|Equilibrium Position and Stiffness Preset Percentage),checkbox,edit,edit,edit,checkbox,slider,radiobut"
+      "ton(Degrees|Radiants|TICK)"
+      MaskVariables	      "ID=@1;ACTIVE_COMM_DIRECTIONS=@2;CONTROL_MODE=@3;DAISY_CHAINING=@4;MAX_ANG=@5;SW_LIMIT=@6;OF"
+      "FSET=@7;ACTIVATE=@8;WDT=@9;UNITY=@10;"
+      MaskTunableValueString  "on,on,on,off,on,off,off,on,on,on"
+      MaskCallbackString      "|||||||||"
+      MaskEnableString	      "on,on,on,off,off,off,off,on,on,on"
+      MaskVisibilityString    "on,on,on,off,off,off,off,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on,on,on,on,on,on"
+      MaskDisplay	      "qbmeascurrMaskDrawing"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskPortRotate	      "default"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "65|Both|Equilibrium Position and Stiffness Preset|off|0|inf|0|off|0|Degrees"
+    }
     Block {
       BlockType		      S-Function
       Name		      "QB Move - Get Current"
       SID		      14
       Ports		      [1, 2]
-      Position		      [30, 123, 140, 167]
+      Position		      [25, 198, 135, 242]
       DropShadow	      on
       AncestorBlock	      "qbmove_library/qbmove"
       LibraryVersion	      "1.37"
@@ -612,7 +646,7 @@ Library {
       Name		      "QB Move - Get EMG"
       SID		      18
       Ports		      [1, 2]
-      Position		      [40, 17, 100, 48]
+      Position		      [50, 32, 110, 63]
       FunctionName	      "qbemg"
       Parameters	      "ID,DAISY_CHAINING"
       SFunctionDeploymentMode off
@@ -641,7 +675,7 @@ Library {
       Name		      "Qb Move"
       SID		      11
       Ports		      [4, 4]
-      Position		      [170, 47, 275, 148]
+      Position		      [180, 17, 285, 118]
       DropShadow	      on
       AncestorBlock	      "qbmove_library/qbmove"
       LibraryVersion	      "*1.37"
@@ -681,7 +715,7 @@ Library {
       Name		      "Qb Move Init"
       SID		      13
       Ports		      [0, 1]
-      Position		      [30, 83, 110, 107]
+      Position		      [40, 113, 120, 137]
       DropShadow	      on
       NamePlacement	      "alternate"
       AncestorBlock	      "qbmove_library/Qb Move Init"

@@ -12,7 +12,7 @@
 //                                                             main  definitions
 //==============================================================================
 
-#define S_FUNCTION_NAME  qbmove
+#define S_FUNCTION_NAME  qbmeascurr
 #define S_FUNCTION_LEVEL 2
 
 //==============================================================================
@@ -71,7 +71,9 @@
 #define out_pos_a         ( ssGetOutputPortRealSignal       ( S, 0 ) )
 #define out_pos_b         ( ssGetOutputPortRealSignal       ( S, 1 ) )
 #define out_pos_link      ( ssGetOutputPortRealSignal       ( S, 2 ) )
-#define out_debug         ( ssGetOutputPortRealSignal       ( S, 3 ) )
+#define out_curr_1        ( ssGetOutputPortRealSignal       ( S, 3 ) )
+#define out_curr_2        ( ssGetOutputPortRealSignal       ( S, 4 ) )
+#define out_debug         ( ssGetOutputPortRealSignal       ( S, 5 ) )
 #define out_handle_single ( (HANDLE* *)ssGetOutputPortSignal( S, 0 ) )[0]
 #define out_handle_full   ( (HANDLE* *)ssGetOutputPortSignal( S, 3 ) )[0]
 
@@ -266,15 +268,15 @@ static void mdlInitializeSizes( SimStruct *S )
     {    // IF daisy chaining activated
         if(params_daisy_chaining)
         {
-            if (!ssSetNumOutputPorts(S, 5)) return;
+            if (!ssSetNumOutputPorts(S, 7)) return;
 
 ///////////////////////////////// 3 ) com handle    ////////////////////////////
-            ssSetOutputPortWidth   ( S, 4, 1             );
-            ssSetOutputPortDataType( S, 4, COM_HANDLE_id );
+            ssSetOutputPortWidth   ( S, 6, 1             );
+            ssSetOutputPortDataType( S, 6, COM_HANDLE_id );
         }
         else
         {
-            if (!ssSetNumOutputPorts(S, 4)) return;
+            if (!ssSetNumOutputPorts(S, 6)) return;
         }
 
 //////////////////////////////// 0 ) position A   //////////////////////////////
@@ -292,6 +294,14 @@ static void mdlInitializeSizes( SimStruct *S )
 //////////////////////////////// 3 ) debug integer    //////////////////////////
         ssSetOutputPortWidth    ( S, 3, NUM_OF_QBOTS );
         ssSetOutputPortDataType ( S, 3, SS_DOUBLE    );
+        
+//////////////////////////////// 3 ) debug integer    //////////////////////////
+        ssSetOutputPortWidth    ( S, 4, NUM_OF_QBOTS );
+        ssSetOutputPortDataType ( S, 4, SS_DOUBLE    );
+
+//////////////////////////////// 3 ) debug integer    //////////////////////////
+        ssSetOutputPortWidth    ( S, 5, NUM_OF_QBOTS );
+        ssSetOutputPortDataType ( S, 5, SS_DOUBLE    );
     }
 
 //=============================================================     sample times
@@ -309,7 +319,7 @@ static void mdlInitializeSizes( SimStruct *S )
 
     for( i = 0; i < NUM_OF_QBOTS; i++)
     {
-        ssSetDWorkWidth(S, i, 4);
+        ssSetDWorkWidth(S, i, 6);
         ssSetDWorkDataType(S, i, SS_DOUBLE);
     }
 
@@ -536,7 +546,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     int16_T  refs[2];                           // auxiliary value
     int8_T  qbot_id;                            // qbot id's
     int16_T  ref_a, ref_b;                      // reference values (16 bits)
-    int16_T measurements[3];
+    int16_T measurements[5];
 
     int i;
     comm_settings comm_settings_t;
@@ -603,24 +613,29 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 
         if( (params_com_direction == RX) || (params_com_direction == BOTH) ){
 
-            
+            out_curr_1[i]     = dwork_out(i)[0];
+            out_curr_2[i]     = dwork_out(i)[1];
+            out_pos_a[i]      = dwork_out(i)[3];
+            out_pos_b[i]      = dwork_out(i)[4];
+            out_pos_link[i]   = dwork_out(i)[5];
 
-            out_pos_a[i]    = dwork_out(i)[0];
-            out_pos_b[i]    = dwork_out(i)[1];
-            out_pos_link[i] = dwork_out(i)[2];
-
-            if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
+            if(!commGetCurrAndMeas(&comm_settings_t, qbot_id, measurements))
             {
-                out_pos_a[i]       = shalf_dir * ((double) measurements[0]) / meas_unity;
-                out_pos_b[i]       = shalf_dir * ((double) measurements[1]) / meas_unity;
-                out_pos_link[i]    = shalf_dir * ((double) measurements[2]) / meas_unity;
+                out_pos_a[i]       = shalf_dir * ((double) measurements[2]) / meas_unity;
+                out_pos_b[i]       = shalf_dir * ((double) measurements[3]) / meas_unity;
+                out_pos_link[i]    = shalf_dir * ((double) measurements[4]) / meas_unity;
+                out_curr_1[i]      = (int) measurements[0];
+                out_curr_2[i]      = (int) measurements[1];
                
             } else
                 out_debug[i] += 1;
+            
+            dwork_out(i)[0] = out_curr_1[i];
+            dwork_out(i)[1] = out_curr_2[i];
+            dwork_out(i)[2] = out_pos_a[i];
+            dwork_out(i)[3] = out_pos_b[i];
+            dwork_out(i)[4] = out_pos_link[i];
 
-            dwork_out(i)[0] = out_pos_a[i];
-            dwork_out(i)[1] = out_pos_b[i];
-            dwork_out(i)[2] = out_pos_link[i];
         }
         
         // Set References
