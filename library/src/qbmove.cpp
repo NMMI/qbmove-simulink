@@ -90,7 +90,7 @@
 #define ON                      true
 #define OFF                     false
 #define TICK                    3
-#define RADIANTS                2
+#define RADIANS                2
 #define DEGREES                 1
 #define RAD_TO_DEG              (180.0 / 3.14159265359)
 
@@ -448,7 +448,7 @@ static void mdlStart( SimStruct *S )
         if ((REF_B_WIDTH > 1) && (REF_B_WIDTH != NUM_OF_QBOTS))    
             return errorHandle(S, WIDTH_MISMATCH_B);
 
-        if ( !PARAM_ACTIVE_STARTUP_FCN && (REF_ACTIVATE_WIDTH != NUM_OF_QBOTS))
+        if (!PARAM_ACTIVE_STARTUP_FCN && (REF_ACTIVATE_WIDTH > 1) && (REF_ACTIVATE_WIDTH != NUM_OF_QBOTS))
             return errorHandle(S, WIDTH_MISMATCH_ACTIVATE);
     }
 
@@ -485,7 +485,7 @@ static void mdlStart( SimStruct *S )
         qbot_id = qbot_id <= 0   ? 1    : qbot_id;  // inferior limit
         qbot_id = qbot_id >= 128 ? 127  : qbot_id;  // superior limit
 
-        //commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
+        commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
     }
 
 }
@@ -526,7 +526,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
         case DEGREES:
             meas_unity = DEG_TO_ANG;
             break;
-        case RADIANTS:
+        case RADIANS:
             meas_unity = DEG_TO_ANG * RAD_TO_DEG;
             break;
         default: // TICK
@@ -609,7 +609,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
             out_pos_b[i]    = dwork_out(i)[1];
             out_pos_link[i] = dwork_out(i)[2];
 
-            if(!commGetMeasurements(&comm_settings_t, qbot_id, measurements))
+            if(commGetMeasurements(&comm_settings_t, qbot_id, measurements) > 0)
             {
                 out_pos_a[i]       = shalf_dir * ((double) measurements[0]) / meas_unity;
                 out_pos_b[i]       = shalf_dir * ((double) measurements[1]) / meas_unity;
