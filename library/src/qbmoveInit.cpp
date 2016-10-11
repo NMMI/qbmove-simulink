@@ -172,6 +172,7 @@ static void mdlStart(SimStruct *S)
 {
     char    string_aux[255];                // auxiliar string
     char    serial_port_path[255];          // auxiliar string
+	char my_port[255];
     int baud_rate;
     comm_settings comm_settings_t;
 
@@ -197,7 +198,13 @@ static void mdlStart(SimStruct *S)
             break;
     }
 
-    openRS485(&comm_settings_t, serial_port_path, baud_rate);
+    #if defined(_WIN32) || defined(_WIN64)
+        sprintf(my_port, "\\\\.\\%s", serial_port_path);
+    #else
+        strcpy(my_port, serial_port_path);
+    #endif
+    
+    openRS485(&comm_settings_t, my_port, baud_rate);
     
     pwork_handle = comm_settings_t.file_handle;
 
