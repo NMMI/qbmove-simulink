@@ -55,7 +55,7 @@
 
 #define PARAM_ACTIVE_STARTUP_FCN  ( (bool) mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
 #define PARAM_WDT_FCN  ( (short int) mxGetScalar( ssGetSFcnParam( S, 8 ) ) )
-#define PARAM_UNITY_FCN  ( (int) mxGetScalar( ssGetSFcnParam( S, 9 ) ) )
+#define PARAM_UNIT_FCN  ( (int) mxGetScalar( ssGetSFcnParam( S, 9 ) ) )
 
 
 //===================================================================     inputs
@@ -315,7 +315,7 @@ static void mdlInitializeSizes( SimStruct *S )
 
 //===================================================================     others
 
-    ssSetOptions(S, SS_OPTION_ALLOW_INPUT_SCALAR_EXPANSION);
+    ssSetOptions(S, SS_OPTION_ALLOW_INPUT_SCALAR_EXPANSION | SS_OPTION_PLACE_ASAP);
     //ssSetOptions(S, SS_OPTION_CALL_TERMINATE_ON_EXIT);
 
 //=======================================================     mask modifications
@@ -516,13 +516,13 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     char aux_char;
     int rx_tx; // Dynamic size of in_ref_activation
 
-    // Measurements unity
+    // Measurements unit
     double meas_unity = 1;
     // Shalf Direction [1 Direction direction / -1 Inverse direction]
     double shalf_dir = 1;
     
-    // Change Unity of Measurement
-    switch(PARAM_UNITY_FCN){
+    // Change Measurement unit
+    switch(PARAM_UNIT_FCN){
         case DEGREES:
             meas_unity = DEG_TO_ANG;
             break;
@@ -564,21 +564,18 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
         rx_tx = 1;
 
     // Activation after start up    
-    if (!PARAM_ACTIVE_STARTUP_FCN){
-        for (i = 0; i < NUM_OF_QBOTS; i++){
-            if ((activation_state[i] == 0) && ((int) in_ref_activation(rx_tx)[i] != 0))
-                    activation(S, ON, i);
-            else{
-                if ((activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0))
-                    activation(S, OFF, i);
-            }
+    for (i = 0; i < NUM_OF_QBOTS; i++){
+        if ((activation_state[i] == 0) && (((int) in_ref_activation(rx_tx)[i] != 0)) || PARAM_ACTIVE_STARTUP_FCN)
+                activation(S, ON, i);
+        else{
+            if ((activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0))
+                activation(S, OFF, i);
         }
-        // Update old value
-
-        for (i = 0; i < NUM_OF_QBOTS; i++)
-            activation_state[i] = (int) in_ref_activation(rx_tx)[i];
     }
-    
+    // Update old value
+
+    for (i = 0; i < NUM_OF_QBOTS; i++)
+        activation_state[i] = (int) in_ref_activation(rx_tx)[i];
 
 //==========================================     asking positions for each motor
 
@@ -705,24 +702,10 @@ static void mdlOutputs( SimStruct *S, int_T tid ){
 
 static void mdlTerminate( SimStruct *S )
 {
-    char aux_char;
-    int try_counter;
-    int i;
-    comm_settings comm_settings_t;
-
-    comm_settings_t.file_handle = in_handle;
-
-    if (comm_settings_t.file_handle == INVALID_HANDLE_VALUE) {
-        closeRS485(&comm_settings_t);
-        return;
-    }
-
-    activation(S, OFF);
-    
+   
     // Enable Activation on startup Flag and Setting ID
     mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on','on'})");
-
-    closeRS485(&comm_settings_t);
+ 
 }
 
 //==============================================================================
@@ -784,7 +767,7 @@ void activation(SimStruct *S, bool flag, const int ID){
         if (flag == ON)
             ssPrintf("Activating cube ID %d: ", (int) qbot_id);
         else 
-            ssPrintf("Dectivating cube ID %d: ", (int) qbot_id);
+            ssPrintf("Deactivating cube ID %d: ", (int) qbot_id);
 
         for (int try_counter = 0; try_counter < 5; try_counter++) {
             ssPrintf("%d ", (try_counter + 1));

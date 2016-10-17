@@ -144,6 +144,7 @@ static void mdlInitializeSizes(SimStruct *S)
                                                 //      - COM handle
     ssSetNumModes(S, 0);                        // 0  mode work vector elements
     ssSetNumNonsampledZCs(S, 0);                // 0  nonsampled zero crossings
+    
 }
 
 //==============================================================================
@@ -172,10 +173,10 @@ static void mdlStart(SimStruct *S)
 {
     char    string_aux[255];                // auxiliar string
     char    serial_port_path[255];          // auxiliar string
-	char my_port[255];
+    char my_port[255];
     int baud_rate;
     comm_settings comm_settings_t;
-
+  
     ssPrintf("qbmove simulink library version: %s\n", QBMOVE_SIMULINK_VERSION);
 
     //======================================================     opening serial port
@@ -197,7 +198,7 @@ static void mdlStart(SimStruct *S)
             baud_rate = BAUD_RATE_57600;
             break;
     }
-
+    
     #if defined(_WIN32) || defined(_WIN64)
         sprintf(my_port, "\\\\.\\%s", serial_port_path);
     #else
@@ -248,7 +249,19 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 static void mdlTerminate(SimStruct *S)
 {
+    comm_settings comm_settings_t;
+    comm_settings_t.file_handle = pwork_handle;
+    
+    // Broadcast deactivation
+    commActivate(&comm_settings_t, 0, 0);
+    
+    if (pwork_handle == INVALID_HANDLE_VALUE) {
+        closeRS485(&comm_settings_t);
+        return;
+    }
 
+    closeRS485(&comm_settings_t);
+ 
 }
 
 //==============================================================================
