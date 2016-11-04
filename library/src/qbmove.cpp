@@ -478,7 +478,10 @@ static void mdlStart( SimStruct *S )
         return errorHandle(S, REACH_QBOTS_MAX);
 
     for (int i = NUM_OF_QBOTS; i--;){
-        activation_state[i] = 0;
+        if (PARAM_ACTIVE_STARTUP_FCN)
+			activation_state[i] = 1;
+		else
+			activation_state[i] = 0;
 
         qbot_id = params_qbot_id(i);
 
@@ -565,18 +568,21 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 
     // Activation after start up    
     for (i = 0; i < NUM_OF_QBOTS; i++){
-        if ((activation_state[i] == 0) && (((int) in_ref_activation(rx_tx)[i] != 0)) || PARAM_ACTIVE_STARTUP_FCN)
+        if ((activation_state[i] == 0) && (((int) in_ref_activation(rx_tx)[i] != 0) || PARAM_ACTIVE_STARTUP_FCN))
                 activation(S, ON, i);
         else{
-            if ((activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0))
+            if ((activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0 && !PARAM_ACTIVE_STARTUP_FCN))
                 activation(S, OFF, i);
         }
     }
     // Update old value
 
-    for (i = 0; i < NUM_OF_QBOTS; i++)
-        activation_state[i] = (int) in_ref_activation(rx_tx)[i];
-
+    for (i = 0; i < NUM_OF_QBOTS; i++) {
+		if (PARAM_ACTIVE_STARTUP_FCN)
+			activation_state[i] = 1;
+		else
+			activation_state[i] = (int) in_ref_activation(rx_tx)[i];
+	}
 //==========================================     asking positions for each motor
 
     for(i = 0; i < NUM_OF_QBOTS; i++)
