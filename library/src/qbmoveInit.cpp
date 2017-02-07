@@ -104,11 +104,18 @@
 
 //=============================================================     work vectors
 
-#define pwork_handle    (*(HANDLE *)ssGetPWork(S))
-
+#if (defined(_WIN32) || defined(_WIN64))
+    #define pwork_handle    (*(HANDLE *)ssGetPWork(S))
+#else
+    #define pwork_handle    (*(int *)ssGetPWork(S))
+#endif
 //===================================================================     ouputs
 
-#define out_handle  (*(HANDLE **)ssGetOutputPortSignal(S,0))
+#if (defined(_WIN32) || defined(_WIN64))
+    #define out_handle  (*(HANDLE **)ssGetOutputPortSignal(S,0))
+#else
+    #define out_handle  (*(int **)ssGetOutputPortSignal(S,0))
+#endif
 
 //==============================================================================
 //                                           Configuration and execution methods
@@ -118,8 +125,12 @@ static void mdlInitializeSizes(SimStruct *S)
 {
     int_T   status;                                 // for new type definition
     DTypeId COM_HANDLE_id;                          // for new type definition
+#if (defined(_WIN32) || defined(_WIN64))
     HANDLE  handle_aux;                             // for new type definition
-
+#else
+    int handle_aux;
+#endif
+    
 //======================================================     new type definition
 
     COM_HANDLE_id = ssRegisterDataType(S, "COM_HANDLE");
