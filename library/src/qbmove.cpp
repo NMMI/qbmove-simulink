@@ -68,21 +68,17 @@
 
 //===============================================================     parameters
 
-#define params_qbot_id(i)       ( mxGetPr( ssGetSFcnParam( S, 0 ) )[ \
-                                    i >= NUM_OF_QBOTS ? NUM_OF_QBOTS - 1 : i ] )
-#define params_com_direction      ( (int) mxGetScalar( ssGetSFcnParam( S, 1 ) ) )
-#define params_qbot_mode          ( (int) mxGetScalar( ssGetSFcnParam( S, 2 ) ) )
-#define params_daisy_chaining  ( (bool) mxGetScalar( ssGetSFcnParam( S, 3 ) ) )
-#define params_angle_range(i)  ( mxGetPr( ssGetSFcnParam( S, 4 ) )[ \
-                              i >= ANG_RANGE_WIDTH ? ANG_RANGE_WIDTH - 1 : i ] )
-#define params_sw_lim_range(i) ( mxGetPr( ssGetSFcnParam(S, 5) )[ \
-                                     i >= SW_LIM_WIDTH ? SW_LIM_WIDTH - 1 : i] )
-#define params_joint_offset(i) ( mxGetPr( ssGetSFcnParam(S, 6) )[\
-                                     i >= OFFSET_WIDTH ? OFFSET_WIDTH - 1 : i] )
+#define params_qbot_id(i)       ( mxGetPr( ssGetSFcnParam( S, 0 ) )[ i >= NUM_OF_QBOTS ? NUM_OF_QBOTS - 1 : i ] )
+#define params_com_direction    ( (int) mxGetScalar( ssGetSFcnParam( S, 1 ) ) )
+#define params_qbot_mode        ( (int) mxGetScalar( ssGetSFcnParam( S, 2 ) ) )
+#define params_daisy_chaining   ( (bool) mxGetScalar( ssGetSFcnParam( S, 3 ) ) )
+#define params_angle_range(i)   ( mxGetPr( ssGetSFcnParam( S, 4 ) )[ i >= ANG_RANGE_WIDTH ? ANG_RANGE_WIDTH - 1 : i ] )
+#define params_sw_lim_range(i)  ( mxGetPr( ssGetSFcnParam(S, 5) )[ i >= SW_LIM_WIDTH ? SW_LIM_WIDTH - 1 : i] )
+#define params_joint_offset(i)  ( mxGetPr( ssGetSFcnParam(S, 6) )[ i >= OFFSET_WIDTH ? OFFSET_WIDTH - 1 : i] )
 
-#define PARAM_ACTIVE_STARTUP_FCN  ( (bool) mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
-#define PARAM_WDT_FCN  ( (short int) mxGetScalar( ssGetSFcnParam( S, 8 ) ) )
-#define PARAM_UNIT_FCN  ( (int) mxGetScalar( ssGetSFcnParam( S, 9 ) ) )
+#define PARAM_ACTIVE_STARTUP_FCN    ((bool) mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
+#define PARAM_WDT_FCN               ((short int) mxGetScalar( ssGetSFcnParam( S, 8 ) ) )
+#define PARAM_UNIT_FCN              ((int) mxGetScalar( ssGetSFcnParam( S, 9 ) ) )
 
 
 //===================================================================     inputs
@@ -93,17 +89,18 @@
     #define in_handle ( *(const int* *)ssGetInputPortSignal( S, 0 ) )[0]
 #endif
                                      
-#define in_ref_a  ( (const real_T *)ssGetInputPortSignal(   S, 1 ) )
-#define in_ref_b  ( (const real_T *)ssGetInputPortSignal(   S, 2 ) )
+#define in_ref_a  ((const real_T *)ssGetInputPortSignal( S, 1 ) )
+#define in_ref_b  ((const real_T *)ssGetInputPortSignal( S, 2 ) )
 
-#define in_ref_activation(i)  ( (const real_T *)ssGetInputPortSignal(   S, i ) ) 
+#define in_ref_activation(i)  ((const real_T *)ssGetInputPortSignal( S, i ) ) 
 
 //==================================================================     outputs
 
-#define out_pos_a         ( ssGetOutputPortRealSignal       ( S, 0 ) )
-#define out_pos_b         ( ssGetOutputPortRealSignal       ( S, 1 ) )
-#define out_pos_link      ( ssGetOutputPortRealSignal       ( S, 2 ) )
-#define out_debug         ( ssGetOutputPortRealSignal       ( S, 3 ) )
+#define out_pos_a       ( ssGetOutputPortRealSignal ( S, 0 ) )
+#define out_pos_b       ( ssGetOutputPortRealSignal ( S, 1 ) )
+#define out_pos_link    ( ssGetOutputPortRealSignal ( S, 2 ) )
+#define out_debug       ( ssGetOutputPortRealSignal ( S, 3 ) )
+
 #if defined(_WIN32) || defined(_WIN64)
     #define out_handle_single ( (HANDLE* *)ssGetOutputPortSignal( S, 0 ) )[0]
     #define out_handle_full   ( (HANDLE* *)ssGetOutputPortSignal( S, 3 ) )[0]
@@ -117,19 +114,19 @@
 
 //================================================================     constants
 
-#define BUFFER_SIZES            15
-#define ANG_TO_DEG              (720.0/65536.0)
-#define DEG_TO_ANG              (65536.0/720.0)
-#define PERC_TO_NUM             (32767.0/100.0)
-#define MAX_STIFF               4000
-#define MAX_POS                 15000
+#define BUFFER_SIZES    15
+#define ANG_TO_DEG      (720.0/65536.0) //Valid only for qbMoves
+#define DEG_TO_ANG      (65536.0/720.0) //Valid only for qbMoves
+#define PERC_TO_NUM     (32767.0/100.0)
+#define MAX_STIFF       4000
+#define MAX_POS         15000
 
-#define ON                      true
-#define OFF                     false
-#define TICK                    3
-#define RADIANS                2
-#define DEGREES                 1
-#define RAD_TO_DEG              (180.0 / 3.14159265359)
+#define ON              true
+#define OFF             false
+#define TICK            3
+#define RADIANS         2
+#define DEGREES         1
+#define RAD_TO_DEG      (180.0 / 3.14159265359)
 
 #define WIDTH_MISMATCH_A        0
 #define WIDTH_MISMATCH_B        1
@@ -142,10 +139,10 @@ enum    COMM_DIRS { RX = 1, TX = 2, BOTH = 3, NONE = 4 };
 
 //===================================================================     macros
 
-#define NUM_OF_QBOTS    ( (int)mxGetNumberOfElements( ssGetSFcnParam( S, 0 ) ) )
-#define ANG_RANGE_WIDTH ( (int)mxGetNumberOfElements( ssGetSFcnParam( S, 4 ) ) )
-#define SW_LIM_WIDTH    ( (int)mxGetNumberOfElements( ssGetSFcnParam( S, 5 ) ) )
-#define OFFSET_WIDTH    ( (int)mxGetNumberOfElements( ssGetSFcnParam( S, 6 ) ) )
+#define NUM_OF_QBOTS    ((int)mxGetNumberOfElements(ssGetSFcnParam( S, 0 )))
+#define ANG_RANGE_WIDTH ((int)mxGetNumberOfElements(ssGetSFcnParam( S, 4 )))
+#define SW_LIM_WIDTH    ((int)mxGetNumberOfElements(ssGetSFcnParam( S, 5 )))
+#define OFFSET_WIDTH    ((int)mxGetNumberOfElements(ssGetSFcnParam( S, 6 )))
 #define REF_A_WIDTH     ssGetInputPortWidth( S, 1 )
 #define REF_B_WIDTH     ssGetInputPortWidth( S, 2 )
 #define SIGN(x)         ( ( (x) < 0) ? -1 : ( (x) > 0 ) )
@@ -155,10 +152,10 @@ enum    COMM_DIRS { RX = 1, TX = 2, BOTH = 3, NONE = 4 };
 //                                                           function prototypes
 //==============================================================================
 
-unsigned char checksum_ ( unsigned char * buf, int size );
-void    showOutputHandle( SimStruct *S );
-void    activation(SimStruct *s, bool flag, const int ID = -1);
-void    errorHandle(SimStruct *S, const int);
+unsigned char checksum_     (unsigned char * buf, int size );
+void    showOutputHandle    (SimStruct *S );
+void    activation          (SimStruct *s, bool flag, const int ID = -1);
+void    errorHandle         (SimStruct *S, const int);
 
 //==============================================================================
 //                                                              Global Variables
@@ -177,6 +174,7 @@ static void mdlInitializeSizes( SimStruct *S )
 {
     int_T   status;                // for new type definition
     DTypeId COM_HANDLE_id;         // for new type definition
+    
 #if defined(_WIN32) || defined(_WIN64)
     HANDLE  handle_aux;            // for new type definition
 #else
@@ -364,17 +362,15 @@ static void mdlInitializeSizes( SimStruct *S )
     switch( params_qbot_mode )
     {
         case PRIME_MOVERS_POS:
-            mexEvalString(
-                "set_param( gcb, 'CONTROL_MODE', 'Prime Movers Positions')" );
+            mexEvalString("set_param( gcb, 'CONTROL_MODE', 'Prime Movers Positions')" );
             break;
+            
         case EQ_POS_AND_PRESET:
-            mexEvalString(
-                "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset')" );
+            mexEvalString("set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset')" );
             break;
         
         case EQ_POS_AND_STIFF_PERC:
-            mexEvalString(
-                "set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset Percentage')" );
+            mexEvalString("set_param( gcb, 'CONTROL_MODE', 'Equilibrium Position and Stiffness Preset Percentage')" );
             break;
     }
 
@@ -509,6 +505,7 @@ static void mdlStart( SimStruct *S )
     //RS485InitCommSettings(&comm_settings_t);
     comm_settings_t.file_handle = in_handle;
 
+    // Activation is done if activation on startup is checked
     if (PARAM_ACTIVE_STARTUP_FCN)
         activation(S, ON);       
     
@@ -603,19 +600,20 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     comm_settings_t.file_handle = in_handle;
     
     if( (params_com_direction == TX) || (params_com_direction == BOTH) ) 
-        rx_tx = 3;
+        rx_tx = 3 - 1;
     else
-        rx_tx = 1;
+        rx_tx = 1 - 1;
 
     // Activation after start up    
-    for (i = 0; i < NUM_OF_QBOTS; i++){
-        if ((activation_state[i] == 0) && (((int) in_ref_activation(rx_tx)[i] != 0) || PARAM_ACTIVE_STARTUP_FCN))
+    for (i = 0; i < NUM_OF_QBOTS; i++) {
+        if ( (activation_state[i] == 0) && (((int) in_ref_activation(rx_tx)[i] != 0) || PARAM_ACTIVE_STARTUP_FCN))
                 activation(S, ON, i);
-        else{
-            if ((activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0 && !PARAM_ACTIVE_STARTUP_FCN))
+        else {
+            if ( (activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0 && !PARAM_ACTIVE_STARTUP_FCN))
                 activation(S, OFF, i);
         }
     }
+    
     // Update old value
 
     for (i = 0; i < NUM_OF_QBOTS; i++) {

@@ -107,7 +107,7 @@ end
 if( strcmp( tmp_A_C_DIRS, 'Both' ) | strcmp( tmp_A_C_DIRS, 'Tx' ) )
   tmp_MaskEnables{3} = 'on';
   tmp_MaskEnables{6} = 'off';
-  tmp_MaskEnables{8} = 'off';
+  tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
 end
@@ -117,7 +117,7 @@ if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
   tmp_MaskEnables{3} = 'off';
   tmp_MaskEnables{6} = 'off';
   tmp_MaskEnables{7} = 'off';
-  tmp_MaskEnables{8} = 'off';
+  tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
 end
@@ -128,7 +128,7 @@ if( strcmp( tmp_A_C_DIRS, 'None' ) )
   tmp_MaskEnables{5} = 'off';
   tmp_MaskEnables{6} = 'off';
   tmp_MaskEnables{7} = 'off';
-  tmp_MaskEnables{8} = 'off';
+  tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'off';
 end
