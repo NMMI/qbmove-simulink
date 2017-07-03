@@ -202,9 +202,8 @@ static void mdlInitializeSampleTimes(SimStruct *S)
 #if defined(MDL_START)
 static void mdlStart(SimStruct *S)
 {
-    char    string_aux[255];                // auxiliar string
-    char    serial_port_path[255];          // auxiliar string
-    char my_port[255];
+    char serial_port_path[255] = {'\0'};          // auxiliar string
+    char my_port[255] = {'\0'};
     int baud_rate;
     comm_settings comm_settings_t;
   
@@ -235,10 +234,12 @@ static void mdlStart(SimStruct *S)
     #else
         strcpy(my_port, serial_port_path);
     #endif
-    
+
     openRS485(&comm_settings_t, my_port, baud_rate);
     
+    // Always update handles
     pwork_handle = comm_settings_t.file_handle;
+    out_handle = &pwork_handle;
 
     #if defined(_WIN32) || defined(_WIN64)
         if(pwork_handle == INVALID_HANDLE_VALUE)
@@ -246,16 +247,11 @@ static void mdlStart(SimStruct *S)
         if(pwork_handle == -1)
     #endif
     {
+        // Print error and stop simulation
         ssPrintf("Check your COM port. \nCould not connect to %s\n", serial_port_path);
-        out_handle = &pwork_handle;
-
-        // Stop simulation
         mexEvalString("set_param(bdroot, 'SimulationCommand', 'stop')");
-
         return;
     }
-
-    out_handle = &pwork_handle;
 }
 #endif /*  MDL_START */
 
@@ -280,19 +276,22 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
 static void mdlTerminate(SimStruct *S)
 {
+    #if defined(_WIN32) || defined(_WIN64)
+        if(pwork_handle == INVALID_HANDLE_VALUE)
+    #else
+        if(pwork_handle == -1)
+    #endif
+    {
+        return;
+    }
+
     comm_settings comm_settings_t;
     comm_settings_t.file_handle = pwork_handle;
     
     // Broadcast deactivation
     commActivate(&comm_settings_t, 0, 0);
-    
-    if (pwork_handle == INVALID_HANDLE_VALUE) {
-        closeRS485(&comm_settings_t);
-        return;
-    }
-
+    // Close connection
     closeRS485(&comm_settings_t);
- 
 }
 
 //==============================================================================
