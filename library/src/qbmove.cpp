@@ -33,6 +33,8 @@
 //
 // Description: Communication s-function for the qbMove. To be used with RS-485
 //              on a Virtual COM.
+//
+// Version:     6.2.4
 //------------------------------------------------------------------------------
 
 //==============================================================================
@@ -600,9 +602,9 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
     comm_settings_t.file_handle = in_handle;
     
     if( (params_com_direction == TX) || (params_com_direction == BOTH) ) 
-        rx_tx = 3 - 1;
+        rx_tx = 3;
     else
-        rx_tx = 1 - 1;
+        rx_tx = 1;
 
     // Activation after start up    
     for (i = 0; i < NUM_OF_QBOTS; i++) {
