@@ -38,7 +38,7 @@ E.g.
 ### Downloads
 
 To be able to correctly use these libraries, you will need to download the current APIs
-You can find them [here](https://github.com/qbrobotics/qbAPI).
+You can find them [here](https://bitbucket.org/qbrobotics/qbdevice-api).
 You will need to just download the qbAPI folder and save it side by side with the qbmove_simulink
 folder. Before compiling be sure to have a folder tree like that (be sure to remove the `-master` suffix):
 
@@ -71,7 +71,7 @@ Windows, Linux... but you need to recompile it for your system.
 
 [WARNING:   Matlab version supported are from 2014a up to 2015b
             Matlab bug advised, as soon as possible problem will be fixed
-            Previous Matlab versions can download: https://github.com/qbrobotics/qbmove_simulink/commit/9cd93e137cd21c2b56a822ea5e8a742032f01692
+            Previous Matlab versions can download: https://bitbucket.org/qbrobotics/qbmove-simulink/commits/9cd93e137cd21c2b56a822ea5e8a742032f01692
             ]
 
 1.  Move your position in `qbmove_simulink`,type install and press return. 
