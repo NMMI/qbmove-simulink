@@ -608,10 +608,10 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 
     // Activation after start up    
     for (i = 0; i < NUM_OF_QBOTS; i++) {
-        if ( (activation_state[i] == 0) && (((int) in_ref_activation(rx_tx)[i] != 0) || PARAM_ACTIVE_STARTUP_FCN))
+        if ( (activation_state[i] == 0) && (PARAM_ACTIVE_STARTUP_FCN || ((int) in_ref_activation(rx_tx)[i] != 0)))
                 activation(S, ON, i);
         else {
-            if ( (activation_state[i] != 0) && ((int) in_ref_activation(rx_tx)[i] == 0 && !PARAM_ACTIVE_STARTUP_FCN))
+            if ( (activation_state[i] != 0) && (!PARAM_ACTIVE_STARTUP_FCN && (int) in_ref_activation(rx_tx)[i] == 0))
                 activation(S, OFF, i);
         }
     }
