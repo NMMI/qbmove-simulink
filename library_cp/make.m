@@ -35,9 +35,6 @@ else
 	mkdir(pwd, 'bin');
 end
 
-% QB blocks
-mex -outdir bin src/qbmoveInit.cpp ../../qbAPI/src/qbmove_communications.cpp -Iinclude/
-mex -outdir bin src/qbmove.cpp ../../qbAPI/src/qbmove_communications.cpp -Iinclude/
-mex -outdir bin src/qbcurrent.cpp ../../qbAPI/src/qbmove_communications.cpp -Iinclude/
-mex -outdir bin src/qbemg.cpp ../../qbAPI/src/qbmove_communications.cpp -Iinclude/
-mex -outdir bin src/qbmeascurr.cpp ../../qbAPI/src/qbmove_communications.cpp -Iinclude/
+% CP blocks
+mex -outdir bin src/getImuReadings_v1.cpp ../../qbAPI/src/qbmove_communications.cpp ../../qbAPI/src/cp_communications.cpp -Iinclude/
+mex -outdir bin src/getImuReadings_v2.cpp ../../qbAPI/src/qbmove_communications.cpp ../../qbAPI/src/cp_communications.cpp -Iinclude/

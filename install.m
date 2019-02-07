@@ -49,6 +49,7 @@ last_version_flag = false;
 
 lib = 'library/';
 lib_pac = 'library_pacer/';
+lib_cp = 'library_cp/';
 
 %retrieve current matlab version
 ver = version('-release');
@@ -107,6 +108,38 @@ end
 
 copyfile(old_file, new_file);
 
+old_file = '';
+new_file = '';
+
+% CP LIBRARY UPDATE
+
+old_file = strcat('', lib_cp);
+old_file = strcat(old_file, 'vers/CP_library_');
+old_file = strcat(old_file, ver);
+
+new_file = strcat('', lib_cp);
+new_file = strcat(new_file, 'CP_library');
+
+if ( (str2double(ver(1:end-1)) >= 2013) )
+    old_file = strcat(old_file, '.slx');
+    new_file = strcat(new_file, '.slx');
+    
+    if ~exist(old_file, 'file')
+        last_version_flag = true;
+        old_file = strcat('library/vers/CP_library_', num2str(last_version));
+        old_file = strcat(old_file, last_release);
+        old_file = strcat(old_file, '.slx');
+    end    
+else
+    old_file = strcat(old_file, '.mdl');
+    new_file = strcat(new_file, '.mdl');
+end
+
+copyfile(old_file, new_file,'f');
+
+old_file = '';
+new_file = '';
+
 % Add path to Set Path field
 path(genpath(cd), path);
 
@@ -124,20 +157,19 @@ while flag_path
         flag_path = savepath(alternative_path);
 
         if (flag_path)
-            disp(['[ERROR] Path not correct. ' alaternative_path]);
+            disp(['[ERROR] Path not correct. ' alternative_path]);
         end
     else
-        disp(['[ERROR] This is not a directory. ' alaternative_path]);
+        disp(['[ERROR] This is not a directory. ' alternative_path]);
     end
 end
-
 
 
 if last_version_flag
     display('[WARNING] MATLAB version is not supported, last version available set.')
 end
 
-display('[INFO] QBmove library install successful');
+display('[INFO] QBmove and CP libraries installed successfully');
 
 clear all
 
