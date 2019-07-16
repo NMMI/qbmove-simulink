@@ -52,7 +52,7 @@ setup(block);
     function setup(block)
         % Register the number of ports.
         block.NumInputPorts  = 0;
-        block.NumOutputPorts = 1
+        block.NumOutputPorts = 1;
 
         block.SetPreCompOutPortInfoToDynamic;
         block.OutputPort(1).Dimensions  = 1;
