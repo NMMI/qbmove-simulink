@@ -99,7 +99,7 @@
 
 //===============================================================     parameters
 
-#define param_com_port(i)   (mxGetPr( ssGetSFcnParam( S, 0 ) )[i])
+#define param_com_port(i)   (mxGetPr(ssGetSFcnParam(S, 0))[i])
 #define param_com_baudrate  (int)*mxGetPr(ssGetSFcnParam(S, 1))
 
 //=============================================================     work vectors
@@ -134,11 +134,14 @@ static void mdlInitializeSizes(SimStruct *S)
 //======================================================     new type definition
 
     COM_HANDLE_id = ssRegisterDataType(S, "COM_HANDLE");
-    if(COM_HANDLE_id == INVALID_DTYPE_ID) return;
+    if(COM_HANDLE_id == INVALID_DTYPE_ID) 
+        return;
     status = ssSetDataTypeSize(S, COM_HANDLE_id, sizeof(handle_aux));
-    if(status == 0) return;
+    if(status == 0) 
+        return;
     status = ssSetDataTypeZero(S, COM_HANDLE_id, &handle_aux);
-    if(status == 0) return;
+    if(status == 0) 
+        return;
 
 //===============================================================     parameters
 

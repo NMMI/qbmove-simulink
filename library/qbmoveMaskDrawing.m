@@ -42,13 +42,11 @@ end
 % image( imread('qbot.jpg') );
 %=======================================================     TEMPORARY VARIABLES
 tmp_A_C_DIRS = get_param( gcb, 'ACTIVE_COMM_DIRECTIONS' );
-% tmp_MaskEnables = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };
-% tmp_MaskVisibilities = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };
 tmp_MaskEnables = get_param( gcb, 'MaskEnables' );              % actual config
 tmp_MaskVisibilities = get_param( gcb, 'MaskVisibilities' );   % actual config
 %====================================================================     INPUTS
 port_label( 'input', 1, 'handle' );
-if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
+if( strcmp( tmp_A_C_DIRS, 'Tx' ) || strcmp( tmp_A_C_DIRS, 'Both' ) )
     if( strcmp( get_param( gcb, 'CONTROL_MODE'), ...
                                 'Equilibrium Position and Stiffness Preset' )  )
       port_label( 'input', 2, 'eq.pos.' );
@@ -75,12 +73,12 @@ else
 end
 
 %==================================================================      OUTPUTS
-if( strcmp( tmp_A_C_DIRS, 'Tx' ) | strcmp( tmp_A_C_DIRS, 'None' ) )
+if( strcmp( tmp_A_C_DIRS, 'Tx' ) || strcmp( tmp_A_C_DIRS, 'None' ) )
   if( strcmp( get_param( gcb, 'DAISY_CHAINING'), 'on') )
     port_label( 'output', 1, 'handle' );
   end
 end
-if( strcmp( tmp_A_C_DIRS, 'Rx' ) | strcmp( tmp_A_C_DIRS, 'Both' ) )
+if( strcmp( tmp_A_C_DIRS, 'Rx' ) || strcmp( tmp_A_C_DIRS, 'Both' ) )
   port_label( 'output', 1, 'pos.1' );
   port_label( 'output', 2, 'pos.2' );
   port_label( 'output', 3, 'pos.L' );
@@ -101,13 +99,15 @@ end
 %     8   ACTIVATE                  on
 %     9   WDT                       on
 %     10  UNITY                     on
+%     11  SETINPUTSACK              on
 % CASE 'Tx' : nothing to do
-if( strcmp( tmp_A_C_DIRS, 'Both' ) | strcmp( tmp_A_C_DIRS, 'Tx' ) )
+if( strcmp( tmp_A_C_DIRS, 'Both' ) || strcmp( tmp_A_C_DIRS, 'Tx' ) )
   tmp_MaskEnables{3} = 'on';
   tmp_MaskEnables{6} = 'off';
   tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
+  tmp_MaskEnables{11} = 'on';
 end
 
 % CASE 'Rx' : set 'off' mask enables for SW_LIMIT and OFFSET
@@ -118,6 +118,7 @@ if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
   tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
+  tmp_MaskEnables{11} = 'off';
 end
 
 % CASE 'None' : set 'off' mask enables for MAX_ANG, SW_LIMIT and OFFSET
@@ -129,6 +130,7 @@ if( strcmp( tmp_A_C_DIRS, 'None' ) )
   tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'off';
+  tmp_MaskEnables{11} = 'off';
 end
 
 set_param( gcb, 'MaskEnables', tmp_MaskEnables );

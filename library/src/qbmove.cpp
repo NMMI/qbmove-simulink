@@ -70,17 +70,18 @@
 
 //===============================================================     parameters
 
-#define params_qbot_id(i)       ( mxGetPr( ssGetSFcnParam( S, 0 ) )[ i >= NUM_OF_QBOTS ? NUM_OF_QBOTS - 1 : i ] )
-#define params_com_direction    ( (int) mxGetScalar( ssGetSFcnParam( S, 1 ) ) )
-#define params_qbot_mode        ( (int) mxGetScalar( ssGetSFcnParam( S, 2 ) ) )
-#define params_daisy_chaining   ( (bool) mxGetScalar( ssGetSFcnParam( S, 3 ) ) )
-#define params_angle_range(i)   ( mxGetPr( ssGetSFcnParam( S, 4 ) )[ i >= ANG_RANGE_WIDTH ? ANG_RANGE_WIDTH - 1 : i ] )
-#define params_sw_lim_range(i)  ( mxGetPr( ssGetSFcnParam(S, 5) )[ i >= SW_LIM_WIDTH ? SW_LIM_WIDTH - 1 : i] )
-#define params_joint_offset(i)  ( mxGetPr( ssGetSFcnParam(S, 6) )[ i >= OFFSET_WIDTH ? OFFSET_WIDTH - 1 : i] )
+#define params_qbot_id(i)       (mxGetPr( ssGetSFcnParam( S, 0 ))[ i >= NUM_OF_QBOTS ? NUM_OF_QBOTS - 1 : i ])
+#define params_com_direction    ((int) mxGetScalar(ssGetSFcnParam(S, 1 )))
+#define params_qbot_mode        ((int) mxGetScalar(ssGetSFcnParam(S, 2 )))
+#define params_daisy_chaining   ((bool) mxGetScalar(ssGetSFcnParam(S, 3 )))
+#define params_angle_range(i)   (mxGetPr(ssGetSFcnParam(S, 4))[ i >= ANG_RANGE_WIDTH ? ANG_RANGE_WIDTH - 1 : i ])
+#define params_sw_lim_range(i)  (mxGetPr(ssGetSFcnParam(S, 5))[ i >= SW_LIM_WIDTH ? SW_LIM_WIDTH - 1 : i])
+#define params_joint_offset(i)  (mxGetPr(ssGetSFcnParam(S, 6))[ i >= OFFSET_WIDTH ? OFFSET_WIDTH - 1 : i])
 
-#define PARAM_ACTIVE_STARTUP_FCN    ((bool) mxGetScalar( ssGetSFcnParam( S, 7 ) ) )
-#define PARAM_WDT_FCN               ((short int) mxGetScalar( ssGetSFcnParam( S, 8 ) ) )
-#define PARAM_UNIT_FCN              ((int) mxGetScalar( ssGetSFcnParam( S, 9 ) ) )
+#define PARAM_ACTIVE_STARTUP_FCN    ((bool) mxGetScalar( ssGetSFcnParam( S, 7 )))
+#define PARAM_WDT_FCN               ((short int) mxGetScalar( ssGetSFcnParam( S, 8 )))
+#define PARAM_UNIT_FCN              ((int) mxGetScalar( ssGetSFcnParam( S, 9 )))
+#define PARAM_INPUTS_ACK            ((bool) mxGetScalar( ssGetSFcnParam( S, 10)))
 
 
 //===================================================================     inputs
@@ -147,7 +148,7 @@ enum    COMM_DIRS { RX = 1, TX = 2, BOTH = 3, NONE = 4 };
 #define OFFSET_WIDTH    ((int)mxGetNumberOfElements(ssGetSFcnParam( S, 6 )))
 #define REF_A_WIDTH     ssGetInputPortWidth( S, 1 )
 #define REF_B_WIDTH     ssGetInputPortWidth( S, 2 )
-#define SIGN(x)         ( ( (x) < 0) ? -1 : ( (x) > 0 ) )
+#define SIGN(x)         (((x) < 0) ? -1 : ((x) > 0))
 
 #define REF_ACTIVATE_WIDTH     ssGetInputPortWidth( S, 3 )
 //==============================================================================
@@ -203,18 +204,19 @@ static void mdlInitializeSizes( SimStruct *S )
 
 //===============================================================     parameters
 
-    ssSetNumSFcnParams( S, 10 ); // 10 parameters:
-                                 //    - qbot I2C id
-                                 //      - comm. direction: rx/tx/both
-                                 //      - qbot mode: q1-q2 or qs-qd
-                                 //      - daisy chaining
-                                 //      - angle range
+    ssSetNumSFcnParams( S, 11 ); // 11 parameters:
+                                 //    - Id
+                                 //    - Comm. direction: rx/tx/both
+                                 //    - Input mode: q1-q2 or qs-qd
+                                 //    - Daisy chaining
+                                 //    - Angle range
                                  //    - software limit on equilibrium position
                                  //    - joint offset for equilibrium position
                                  //    - activation on startup button
                                  //    - watchdog timer
                                  //    - measurement unity
-
+                                 //    - Inputs with feedback
+    
 //===================================================================     inputs
 
     // Set number of inputs
@@ -512,7 +514,7 @@ static void mdlStart( SimStruct *S )
         activation(S, ON);       
     
     // Disable Activation on startup Flag and Setting ID
-    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on','on'})");
+    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on','on','on'})");
 
     if (NUM_OF_QBOTS > 255)
         return errorHandle(S, REACH_QBOTS_MAX);
@@ -674,19 +676,23 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
             {
                 case PRIME_MOVERS_POS:
 
-                    auxa = (int)( (shalf_dir * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity) );
-                    auxb = (int)( (shalf_dir * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
+                    auxa = (int)((shalf_dir * in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity));
+                    auxb = (int)((shalf_dir * in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
 
                     refs[0] = (int16_T)( auxa );
                     refs[1] = (int16_T)( auxb );
                     
-                    commSetInputs(&comm_settings_t, qbot_id, refs);
+                    if(PARAM_INPUTS_ACK)
+                        commSetInputsAck(&comm_settings_t, qbot_id, refs);
+                    else
+                        commSetInputs(&comm_settings_t, qbot_id, refs);
+                    
                     break;
 
                 case EQ_POS_AND_PRESET: 
 
-                    auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
-                    auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity) );
+                    auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir));
+                    auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * meas_unity));
 
                     if (auxb < 0) {
                         auxb = 0;
@@ -700,23 +706,29 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                         auxa = -MAX_POS + auxb;
                     }
 
-                    refs[0] = (int16_T)( auxa + auxb);
-                    refs[1] = (int16_T)( auxa - auxb);
+                    refs[0] = (int16_T)(auxa + auxb);
+                    refs[1] = (int16_T)(auxa - auxb);
                     
-                    commSetInputs(&comm_settings_t, qbot_id, refs);
+                    if(PARAM_INPUTS_ACK)
+                        commSetInputsAck(&comm_settings_t, qbot_id, refs);
+                    else
+                        commSetInputs(&comm_settings_t, qbot_id, refs);
+                    
                     break;
                     
                 case EQ_POS_AND_STIFF_PERC:
 
-                    auxa = (int)( (in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir) );
-                    auxb = (int)( (in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * PERC_TO_NUM) );
-
+                    auxa = (int)((in_ref_a[i >= REF_A_WIDTH ? REF_A_WIDTH - 1 : i] * meas_unity * shalf_dir));
+                    auxb = (int)((in_ref_b[i >= REF_B_WIDTH ? REF_B_WIDTH - 1 : i] * PERC_TO_NUM));
+                    
+                    // First input saturation between -15000/15000 ticks
                     if (auxa > MAX_POS) {
                         auxa = MAX_POS;
                     } else if (auxa < -MAX_POS) {
                         auxa = -MAX_POS;
                     }
-                    
+                   
+                    //Second input saturation between 0 and 100% (expressed as 32767)
                     if (auxb > 32767) {
                         auxb = 32767;
                     } else if (auxb <= 0) {
@@ -726,7 +738,10 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                     refs[0] = (int16_T)(auxa);
                     refs[1] = (int16_T)(auxb);
                     
-                    commSetPosStiff(&comm_settings_t, qbot_id, refs);
+                    if(PARAM_INPUTS_ACK)
+                        commSetPosStiffAck(&comm_settings_t, qbot_id, refs);
+                    else
+                        commSetPosStiff(&comm_settings_t, qbot_id, refs);
                     
                     break;
                 default:
@@ -751,7 +766,7 @@ static void mdlTerminate( SimStruct *S )
 {
    
     // Enable Activation on startup Flag and Setting ID
-    mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on','on'})");
+    mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on','on','on'})");
  
 }
 

@@ -1,6 +1,6 @@
 %% BSD 3-Clause License
 %
-% Copyright (c) 2015-2018, qbrobotics
+% Copyright (c) 2015-2019, qbrobotics
 % All rights reserved.
 %
 % Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@
 % This code install qbmove and qbpacer library in your system and update
 % 'path' variable with necessary paths 
 
-clear all
+clear
 clc
 % Install library
 
@@ -64,18 +64,18 @@ if ( (str2double(ver(1:end-1)) >= 2013) || ( str2double(ver(1:end-1)) == 2012 &&
     old_file = strcat(old_file, '.slx');
     new_file = strcat(new_file, '.slx');
     
-    if ~exist(old_file, 'file')
-        last_version_flag = true;
-        old_file = strcat('library/vers/qbmove_library_', num2str(last_version));
-        old_file = strcat(old_file, last_release);
-        old_file = strcat(old_file, '.slx');
-    end    
+%     if ~exist(old_file, 'file')
+%         last_version_flag = true;
+%         old_file = strcat('library/vers/qbmove_library_', num2str(last_version));
+%         old_file = strcat(old_file, last_release);
+%         old_file = strcat(old_file, '.slx');
+%     end    
 else
     old_file = strcat(old_file, '.mdl');
     new_file = strcat(new_file, '.mdl');
 end
 
-copyfile(old_file, new_file);
+copyfile(new_file, old_file);
 
 old_file = '';
 new_file = '';
@@ -94,18 +94,18 @@ if ( (str2double(ver(1:end-1)) >= 2013) || ( str2double(ver(1:end-1)) == 2012 &&
     old_file = strcat(old_file, '.slx');
     new_file = strcat(new_file, '.slx');
     
-    if ~exist(old_file, 'file')
-        last_version_flag = true;
-        old_file = strcat('library_pacer/vers/QB_pacer_lib_', num2str(last_version));
-        old_file = strcat(old_file, last_release);
-        old_file = strcat(old_file, '.slx');
-    end
+%     if ~exist(old_file, 'file')
+%         last_version_flag = true;
+%         old_file = strcat('library_pacer/vers/QB_pacer_lib_', num2str(last_version));
+%         old_file = strcat(old_file, last_release);
+%         old_file = strcat(old_file, '.slx');
+%     end
 else
     old_file = strcat(old_file, '.mdl');
     new_file = strcat(new_file, '.mdl');
 end
 
-copyfile(old_file, new_file);
+copyfile(new_file, old_file);
 
 % Add path to Set Path field
 path(genpath(cd), path);
@@ -124,21 +124,21 @@ while flag_path
         flag_path = savepath(alternative_path);
 
         if (flag_path)
-            disp(['[ERROR] Path not correct. ' alaternative_path]);
+            disp(['[ERROR] Path not correct. ' alternative_path]);
         end
     else
-        disp(['[ERROR] This is not a directory. ' alaternative_path]);
+        disp(['[ERROR] This is not a directory. ' alternative_path]);
     end
 end
 
 
 
 if last_version_flag
-    display('[WARNING] MATLAB version is not supported, last version available set.')
+    disp('[WARNING] MATLAB version is not supported, last version available set.')
 end
 
-display('[INFO] QBmove library install successful');
+disp('[INFO] QBmove library install successful');
 
-clear all
+clear;
 
 
