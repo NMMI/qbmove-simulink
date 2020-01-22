@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // BSD 3-Clause License
 //
-// Copyright (c) 2015-2018, qbrobotics
+// Copyright (c) 2015-2020, qbrobotics
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,6 @@
 #define PARAM_ACTIVE_STARTUP_FCN    ((bool) mxGetScalar( ssGetSFcnParam( S, 7 )))
 #define PARAM_WDT_FCN               ((short int) mxGetScalar( ssGetSFcnParam( S, 8 )))
 #define PARAM_UNITY_FCN             ((int) mxGetScalar( ssGetSFcnParam( S, 9 )))
-#define PARAM_INPUTS_ACK            ((bool) mxGetScalar( ssGetSFcnParam( S, 10)))
 
 //===================================================================     inputs
 #if defined(_WIN32) || defined(_WIN64)
@@ -123,7 +122,7 @@
 #define BUFFER_SIZES            15
 #define ANG_TO_DEG              (720.0/65536.0)
 #define DEG_TO_ANG              (65536.0/720.0)
-#define PERC_TO_NUM             (4000.0/100.0)
+#define PERC_TO_NUM             (32767.0/100.0)
 #define MAX_STIFF               4000
 #define MAX_POS                 15000
 
@@ -206,7 +205,7 @@ static void mdlInitializeSizes( SimStruct *S )
 
 //===============================================================     parameters
 
-    ssSetNumSFcnParams( S, 11 ); // 10 parameters:
+    ssSetNumSFcnParams( S, 10 ); // 10 parameters:
                                  //    - Id
                                  //    - Comm. direction: rx/tx/both
                                  //    - Input mode: q1-q2 or qs-qd
@@ -217,7 +216,7 @@ static void mdlInitializeSizes( SimStruct *S )
                                  //    - activation on startup button
                                  //    - watchdog timer
                                  //    - measurement unity
-                                 //    - Inputs feedback
+
 //===================================================================     inputs
 
     // Set number of inputs
@@ -524,7 +523,7 @@ static void mdlStart( SimStruct *S )
         activation(S, ON);       
     
     // Disable Activation on startup Flag and Setting ID
-    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on','on','on'})");
+    mexEvalString(" set_param(gcb,'MaskEnables',{'off','on','on','off','off','off','off','off','on','on'})");
 
     if (NUM_OF_QBOTS > 255)
         return errorHandle(S, REACH_QBOTS_MAX);
@@ -693,10 +692,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                     refs[0] = (int16_T)( auxa );
                     refs[1] = (int16_T)( auxb );
                     
-                    if(PARAM_INPUTS_ACK)
-                        commSetInputsAck(&comm_settings_t, qbot_id, refs);
-                    else
-                        commSetInputs(&comm_settings_t, qbot_id, refs);
+                    commSetInputs(&comm_settings_t, qbot_id, refs);
                     break;
 
                 case EQ_POS_AND_PRESET: 
@@ -719,10 +715,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                     refs[0] = (int16_T)( auxa + auxb);
                     refs[1] = (int16_T)( auxa - auxb);
                     
-                    if(PARAM_INPUTS_ACK)
-                        commSetInputsAck(&comm_settings_t, qbot_id, refs);
-                    else
-                        commSetInputs(&comm_settings_t, qbot_id, refs);
+                    commSetInputs(&comm_settings_t, qbot_id, refs);
                     break;
                     
                 case EQ_POS_AND_STIFF_PERC:
@@ -747,11 +740,7 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
                     refs[0] = (int16_T)(auxa);
                     refs[1] = (int16_T)(auxb);
                     
-                    if(PARAM_INPUTS_ACK)
-                        commSetPosStiffAck(&comm_settings_t, qbot_id, refs);
-                    else
-                        commSetPosStiff(&comm_settings_t, qbot_id, refs);
-                    
+                    commSetPosStiff(&comm_settings_t, qbot_id, refs);
                     break;
                 default:
                     break;
@@ -788,7 +777,7 @@ static void mdlTerminate( SimStruct *S )
     activation(S, OFF);
     
     // Enable Activation on startup Flag and Setting ID
-    mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on','on','on'})");
+    mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on','on'})");
 
     closeRS485(&comm_settings_t);
 }

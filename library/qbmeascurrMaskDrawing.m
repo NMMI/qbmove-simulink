@@ -1,6 +1,6 @@
 %% BSD 3-Clause License
 %
-% Copyright (c) 2015-2018, qbrobotics
+% Copyright (c) 2015-2020, qbrobotics
 % All rights reserved.
 %
 % Redistribution and use in source and binary forms, with or without
@@ -103,7 +103,6 @@ end
 %     8   ACTIVATE                  on
 %     9   WDT                       on
 %     10  UNITY                     on
-%     11  INPUTS_ACK                on
 % CASE 'Tx' : nothing to do
 if( strcmp( tmp_A_C_DIRS, 'Both' ) || strcmp( tmp_A_C_DIRS, 'Tx' ) )
   tmp_MaskEnables{3} = 'on';
@@ -111,7 +110,6 @@ if( strcmp( tmp_A_C_DIRS, 'Both' ) || strcmp( tmp_A_C_DIRS, 'Tx' ) )
   tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
-  tmp_MaskEnables{11} = 'on';
 end
 
 % CASE 'Rx' : set 'off' mask enables for SW_LIMIT and OFFSET
@@ -122,7 +120,6 @@ if( strcmp( tmp_A_C_DIRS, 'Rx' ) )
   tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'on';
-  tmp_MaskEnables{11} = 'off';
 end
 
 % CASE 'None' : set 'off' mask enables for MAX_ANG, SW_LIMIT and OFFSET
@@ -134,7 +131,6 @@ if( strcmp( tmp_A_C_DIRS, 'None' ) )
   tmp_MaskEnables{8} = 'on';
   tmp_MaskEnables{9} = 'on';
   tmp_MaskEnables{10} = 'off';
-  tmp_MaskEnables{11} = 'on';
 end
 
 set_param( gcb, 'MaskEnables', tmp_MaskEnables );

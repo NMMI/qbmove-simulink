@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // BSD 3-Clause License
 //
-// Copyright (c) 2015-2018, qbrobotics
+// Copyright (c) 2015-2020, qbrobotics
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
