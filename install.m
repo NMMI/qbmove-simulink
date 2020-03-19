@@ -41,6 +41,11 @@ cd library
 make
 cd ..
 
+cd library_cp
+make
+cd ..
+
+
 % Load last version available
 load('debug_tools/last_version_release');
 last_version_flag = false;
