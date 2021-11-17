@@ -47,7 +47,6 @@ cd ..
 
 
 % Load last version available
-load('debug_tools/last_version_release');
 last_version_flag = false;
 
 % LIBRARY UPDATE
@@ -145,9 +144,16 @@ copyfile(old_file, new_file,'f');
 old_file = '';
 new_file = '';
 
-% Add path to Set Path field
+% Add path to Set Path field (only for libraries)
+cd library
 path(genpath(cd), path);
-
+cd ..
+cd library_cp
+path(genpath(cd), path);
+cd ..
+cd library_pacer
+path(genpath(cd), path);
+cd ..
 clc
 
 flag_path = savepath;

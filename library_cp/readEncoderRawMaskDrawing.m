@@ -1,6 +1,6 @@
 %% BSD 3-Clause License
 %
-% Copyright (c) 2015-2018, qbrobotics
+% Copyright (c) 2021, Centro "E. Piaggio"
 % All rights reserved.
 %
 % Redistribution and use in source and binary forms, with or without
@@ -29,15 +29,32 @@
 % OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 %%
-if exist(strcat(pwd, '/bin'), 'file')
-    rmdir('bin', 's');
-else
-	mkdir(pwd, 'bin');
+%-------------------------------------------------------------------------------
+% Mask drawing routine
+% Sets ports label and parameters visibility according to choices made in the
+% dialog box of the sfunction qbot_ISS
+%-------------------------------------------------------------------------------
+%==========       UNLOCK LIBRARY IF IT CALLED THE SCRIPT (done to avoid warning)
+if strcmpi( gcs, 'qb_library_ISS' )
+    set_param('qb_library_ISS', 'lock', 'off');
 end
+%==================================================       BLOCK BACKGROUND IMAGE
+% image( imread('qbot.jpg') );
+%=======================================================     TEMPORARY VARIABLES
+% tmp_MaskEnables = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };
+% tmp_MaskVisibilities = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };
+tmp_MaskEnables = get_param( gcb, 'MaskEnables' );              % actual config
+tmp_MaskVisibilities = get_param( gcb, 'MaskVisibilities' );   % actual config
+%====================================================================     INPUTS
+port_label( 'input', 1, 'handle' );
 
-% CP blocks
-mex -outdir bin src/getImuReadings_v1.cpp ../../qbAPI/src/qbmove_communications.cpp ../../qbAPI/src/cp_communications.cpp -Iinclude/
-mex -outdir bin src/getImuReadings_v2.cpp ../../qbAPI/src/qbmove_communications.cpp ../../qbAPI/src/cp_communications.cpp -Iinclude/
-mex -outdir bin src/movePosEmg.cpp ../../qbAPI/src/qbmove_communications.cpp
-mex -outdir bin src/readAnalog.cpp ../../qbAPI/src/qbmove_communications.cpp ../../qbAPI/src/cp_communications.cpp -Iinclude/
-mex -outdir bin src/readEncoderRaw.cpp ../../qbAPI/src/qbmove_communications.cpp ../../qbAPI/src/cp_communications.cpp -Iinclude/
+%==================================================================      OUTPUTS
+
+maskStr = get_param(gcb,'N_EL');
+n_el = str2double(maskStr);
+
+% Set output ports labels
+for i=1:n_el
+    ss = sprintf('Encoder Line %d', i-1); 
+    port_label( 'output', i, ss );
+end
