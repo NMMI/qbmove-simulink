@@ -163,12 +163,6 @@ void    activation(SimStruct *s, bool flag, const int ID = -1);
 void    errorHandle(SimStruct *S, const int);
 
 //==============================================================================
-//                                                              Global Variables
-//==============================================================================
-
-int activation_state[255];
-
-//==============================================================================
 //                                                            mdlInitializeSizes
 //==============================================================================
 // The sizes information is used by Simulink to determine the S-function block's
@@ -354,7 +348,7 @@ static void mdlInitializeSizes( SimStruct *S )
     ssSetNumDWork(S, NUM_OF_QBOTS);     // 0 dwork vector elements
     ssSetNumRWork(S, 0);                // 0 real work vector elements
     ssSetNumIWork(S, 0);                // 0 work vector elements
-    ssSetNumPWork(S, 0);                // 0 pwork vector elements:
+    ssSetNumPWork(S, 1);                // 1 pwork vector elements: activation_state
     ssSetNumModes(S, 0);                // 0 mode work vector elements
     ssSetNumNonsampledZCs(S, 0);        // 0 nonsampled zero crossings
 
@@ -489,6 +483,8 @@ static void mdlStart( SimStruct *S )
     char aux_char;
     comm_settings comm_settings_t;
 
+    int* activation_state;
+
 //=============================                           Check inputs integrity 
 
     if( (params_com_direction == TX) | (params_com_direction == BOTH) ){
@@ -539,6 +535,10 @@ static void mdlStart( SimStruct *S )
         //commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
     }
 
+    activation_state = (int *) calloc(NUM_OF_QBOTS, sizeof(int));
+    void **PWork = ssGetPWork(S);
+    
+    PWork[0] = activation_state;
 }
 #endif /* MDL_START */
 
@@ -592,6 +592,10 @@ static void  mdlUpdate( SimStruct *S, int_T tid )
 
     int i;
     comm_settings comm_settings_t;
+    int* activation_state;
+
+//=============================    retrieve data from work vectors
+    activation_state = (int*) ssGetPWorkValue(S,0);
 
 //=======================================     should this function be evaluated?
 
@@ -783,6 +787,8 @@ static void mdlTerminate( SimStruct *S )
     
     // Enable Activation on startup Flag and Setting ID
     mexEvalString(" set_param(gcb,'MaskEnables',{'on','on','on','off','off','off','off','on','on','on'})");
+
+    ssSetPWorkValue(S,0,NULL);      //activation_state
 
     closeRS485(&comm_settings_t);
 }

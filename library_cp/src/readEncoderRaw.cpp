@@ -85,13 +85,6 @@
 #define BUFFER_SIZES            15
 
 comm_settings comm_settings_t; 
-char n_channels = 0;           // number of programmed encoder lines
-uint8_T qbot_id;               // qbot id's
-uint8_T enc_map[100];
-uint16_T* enc_raw;
-uint8_T num_encoder_lines = 2;
-uint8_T num_encoder_per_line = 5;
-uint8_T num_encoder_conf_total = 0;
     
 //=============================================================     enumerations
 
@@ -128,6 +121,9 @@ static void mdlInitializeSizes( SimStruct *S )
     int i;                         // for cycles
     uint8_T qbot_id;                                // qbot id's
 	
+    char n_channels = 0;           // number of programmed encoder lines
+    uint8_T num_encoder_per_line = 5;
+
     ssAllowSignalsWithMoreThan2D(S);
 //======================================================     new type definition
 
@@ -209,8 +205,8 @@ static void mdlInitializeSizes( SimStruct *S )
 
     ssSetNumDWork(S, NUM_OF_QBOTS);     // 0 dwork vector elements
     ssSetNumRWork(S, 0);                // 0 real work vector elements
-    ssSetNumIWork(S, 0);                // 0 work vector elements
-    ssSetNumPWork(S, 0);                // 0 pwork vector elements:
+    ssSetNumIWork(S, 1);                // 0 work vector elements:  num_encoder_conf_total
+    ssSetNumPWork(S, 2);                // 2 pwork vector elements: enc_map, enc_raw
     ssSetNumModes(S, 0);                // 0 mode work vector elements
     ssSetNumNonsampledZCs(S, 0);        // 0 nonsampled zero crossings
 
@@ -304,6 +300,13 @@ static void mdlStart( SimStruct *S )
     uint8_T qbot_id;   		// qbot id's
 	uint8_T i = 0;	
     
+    char n_channels = N_ENCODER_LINES;           // number of programmed encoder lines
+    uint8_T num_encoder_lines = 2;
+    uint8_T* enc_map;
+    uint16_T* enc_raw;
+
+    uint8_T num_encoder_per_line = 5;
+    uint8_T num_encoder_conf_total = 0;
 //====================================================     should we keep going?
 
     #if defined(_WIN32) || defined(_WIN64)
@@ -319,6 +322,8 @@ static void mdlStart( SimStruct *S )
 //==========================================     asking imu reading
 
     comm_settings_t.file_handle = in_handle;
+
+    enc_map = (uint8_T *) calloc(100, (1)*sizeof(uint8_T));
 	
     commGetEncoderConf(&comm_settings_t, qbot_id, &num_encoder_lines, &num_encoder_per_line, enc_map);
     
@@ -341,6 +346,14 @@ static void mdlStart( SimStruct *S )
 	}
 
     enc_raw = (uint16_T *) calloc(num_encoder_conf_total, (1)*sizeof(uint16_T));
+
+    void **PWork = ssGetPWork(S);
+    
+    PWork[0] = enc_map;
+    PWork[1] = enc_raw;
+
+    int *IWork = ssGetIWork(S);
+    IWork[0] = (uint8_T)num_encoder_conf_total;
 	
 }
 #endif /* MDL_START */
@@ -359,6 +372,19 @@ static void mdlOutputs( SimStruct *S, int_T tid )
     int c_s = 0;
 	int c_id;
     int i;
+
+    char n_channels = N_ENCODER_LINES;           // number of programmed encoder lines
+    uint8_T* enc_map;
+    uint16_T* enc_raw;
+
+    uint8_T num_encoder_per_line = 5;
+    uint8_T num_encoder_conf_total;
+
+//=============================    retrieve data from work vectors
+    enc_map   = (uint8_T*) ssGetPWorkValue(S,0);
+    enc_raw     = (uint16_T*) ssGetPWorkValue(S,1);
+
+    num_encoder_conf_total = (uint8_T)ssGetIWorkValue(S,0);
 
 //=============================     should an output handle appear in the block?
 
@@ -434,6 +460,11 @@ static void mdlTerminate( SimStruct *S )
         return;
     }
  
+    ssSetPWorkValue(S,0,NULL);      //enc_map
+    ssSetPWorkValue(S,1,NULL);      //enc_raw
+    ssSetPWorkValue(S,2,NULL);      //num_encoder_per_line
+    ssSetPWorkValue(S,3,NULL);      //num_encoder_conf_total
+
     closeRS485(&comm_settings_t);
 }
 

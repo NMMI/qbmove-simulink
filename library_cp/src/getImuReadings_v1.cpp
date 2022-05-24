@@ -66,12 +66,6 @@
 #define BUFFER_SIZES            15
 
 comm_settings comm_settings_t; 
-char n_imu = 0;                // number of connected imus
-uint8_T qbot_id;               // qbot id's
-uint8_T* imu_ids;
-uint8_T* imu_table;
-uint8_T* mag_cal;
-float* imu_values;
 
 //=============================================================     enumerations
 
@@ -107,6 +101,7 @@ static void mdlInitializeSizes( SimStruct *S )
     HANDLE  handle_aux;            // for new type definition
     int i;                         // for cycles
     uint8_T qbot_id;                                // qbot id's
+    char n_imu = 0;                // number of connected imus
 	
     ssAllowSignalsWithMoreThan2D(S);
 //======================================================     new type definition
@@ -190,7 +185,7 @@ static void mdlInitializeSizes( SimStruct *S )
     ssSetNumDWork(S, NUM_OF_QBOTS);     // 0 dwork vector elements
     ssSetNumRWork(S, 0);                // 0 real work vector elements
     ssSetNumIWork(S, 0);                // 0 work vector elements
-    ssSetNumPWork(S, 0);                // 0 pwork vector elements:
+    ssSetNumPWork(S, 3);                // 1 pwork vector elements: imu_table, mag_cal, imu_values
     ssSetNumModes(S, 0);                // 0 mode work vector elements
     ssSetNumNonsampledZCs(S, 0);        // 0 nonsampled zero crossings
 
@@ -290,6 +285,12 @@ static void mdlStart( SimStruct *S )
 	uint8_T first_imu_parameter = 2;
 	uint8_T i = 0;	
 
+    char n_imu = N_IMU;                // number of connected imus
+    uint8_T* imu_ids;
+    uint8_T* imu_table;
+    uint8_T* mag_cal;
+    float* imu_values;
+
 //====================================================     should we keep going?
 
     #if defined(_WIN32) || defined(_WIN64)
@@ -381,6 +382,12 @@ static void mdlStart( SimStruct *S )
     
     // Imu values is a 3 sensors x 3 axes x n_imu values
 	imu_values = (float *) calloc(n_imu, (3*3 + 4 + 1)*sizeof(float));
+
+    void **PWork = ssGetPWork(S);
+    
+    PWork[0] = imu_table;
+    PWork[1] = mag_cal;
+    PWork[2] = imu_values;
 	
 }
 #endif /* MDL_START */
@@ -402,6 +409,11 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 	uint8_T flags[3] = {0,0,0};
     int imu_data_size;
     int i;
+
+    char n_imu = N_IMU;                // number of connected imus
+    uint8_T* imu_table;
+    uint8_T* mag_cal;
+    float* imu_values;
 
 	float meas_unity_acc = 1;
 	float meas_unity_gyro = 1;
@@ -435,6 +447,12 @@ static void mdlOutputs( SimStruct *S, int_T tid )
         default:
             meas_unity_gyro = 1;
     }
+
+//=============================    retrieve data from work vectors
+    imu_table   = (uint8_T*) ssGetPWorkValue(S,0);
+    mag_cal     = (uint8_T*) ssGetPWorkValue(S,1);
+    imu_values  = (float*) ssGetPWorkValue(S,2);
+
 //=============================     should an output handle appear in the block?
 
     if(params_daisy_chaining) showOutputHandle(S);
@@ -540,6 +558,10 @@ static void mdlTerminate( SimStruct *S )
         return;
     }
  
+    ssSetPWorkValue(S,0,NULL);      //imu_table
+    ssSetPWorkValue(S,1,NULL);      //mag_cal
+    ssSetPWorkValue(S,2,NULL);      //imu_values
+
     closeRS485(&comm_settings_t);
 }
 

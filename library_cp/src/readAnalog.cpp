@@ -85,9 +85,7 @@
 #define BUFFER_SIZES            15
 
 comm_settings comm_settings_t; 
-char n_channels = 0;                // number of connected ADC sensors
-uint8_T qbot_id;               // qbot id's
-short int* adc_raw;
+
 
 //=============================================================     enumerations
 
@@ -124,6 +122,8 @@ static void mdlInitializeSizes( SimStruct *S )
     int i;                         // for cycles
     uint8_T qbot_id;                                // qbot id's
 	
+    char n_channels = 0;                // number of connected ADC sensors
+
     ssAllowSignalsWithMoreThan2D(S);
 //======================================================     new type definition
 
@@ -206,7 +206,7 @@ static void mdlInitializeSizes( SimStruct *S )
     ssSetNumDWork(S, NUM_OF_QBOTS);     // 0 dwork vector elements
     ssSetNumRWork(S, 0);                // 0 real work vector elements
     ssSetNumIWork(S, 0);                // 0 work vector elements
-    ssSetNumPWork(S, 0);                // 0 pwork vector elements:
+    ssSetNumPWork(S, 1);                // 1 pwork vector elements: adc_raw
     ssSetNumModes(S, 0);                // 0 mode work vector elements
     ssSetNumNonsampledZCs(S, 0);        // 0 nonsampled zero crossings
 
@@ -303,6 +303,8 @@ static void mdlStart( SimStruct *S )
     uint8_T tot_adc_channels = 0;
     uint8_T used_adc_channels = 0;
     
+    char n_channels = N_CHANNELS;                // number of connected ADC sensors
+    short int* adc_raw;
 //====================================================     should we keep going?
 
     #if defined(_WIN32) || defined(_WIN64)
@@ -338,6 +340,10 @@ static void mdlStart( SimStruct *S )
 	}
 
     adc_raw = (short int *) calloc(n_channels, (1)*sizeof(short int));
+
+    void **PWork = ssGetPWork(S);
+    
+    PWork[0] = adc_raw;
 	
 }
 #endif /* MDL_START */
@@ -364,6 +370,11 @@ static void mdlOutputs( SimStruct *S, int_T tid )
 	float meas_unity_gyro = 1;
 	float meas_unity_mag = 1;
 	
+    char n_channels = N_CHANNELS;                // number of connected ADC sensors
+    short int* adc_raw;
+//=============================    retrieve data from work vectors
+    adc_raw   = (short int*) ssGetPWorkValue(S,0);
+
 //=============================     should an output handle appear in the block?
 
     if(params_daisy_chaining) showOutputHandle(S);
@@ -435,6 +446,8 @@ static void mdlTerminate( SimStruct *S )
         return;
     }
  
+    ssSetPWorkValue(S,0,NULL);      //adc_raw
+
     closeRS485(&comm_settings_t);
 }
 
