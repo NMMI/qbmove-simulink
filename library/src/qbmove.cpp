@@ -199,10 +199,10 @@ static void mdlInitializeSizes( SimStruct *S )
 
     ssSetNumSFcnParams( S, 10 ); // 10 parameters:
                                  //    - qbot I2C id
-                                 //      - comm. direction: rx/tx/both
-                                 //      - qbot mode: q1-q2 or qs-qd
-                                 //      - daisy chaining
-                                 //      - angle range
+                                 //    - comm. direction: rx/tx/both
+                                 //    - qbot mode: q1-q2 or qs-qd
+                                 //    - daisy chaining
+                                 //    - angle range
                                  //    - software limit on equilibrium position
                                  //    - joint offset for equilibrium position
                                  //    - activation on startup button
@@ -470,8 +470,7 @@ static void mdlStart( SimStruct *S )
     int try_counter;
     char aux_char;
     comm_settings comm_settings_t;
-
-    int* activation_state;
+    int* activation_state = (int *) calloc(NUM_OF_QBOTS, sizeof(int));
 
 //=============================                           Check inputs integrity 
 
@@ -526,8 +525,7 @@ static void mdlStart( SimStruct *S )
 
         commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
     }
-
-    activation_state = (int *) calloc(NUM_OF_QBOTS, sizeof(int));
+    
     void **PWork = ssGetPWork(S);
     
     PWork[0] = activation_state;

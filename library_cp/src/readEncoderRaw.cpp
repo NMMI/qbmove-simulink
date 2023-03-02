@@ -462,8 +462,8 @@ static void mdlTerminate( SimStruct *S )
  
     ssSetPWorkValue(S,0,NULL);      //enc_map
     ssSetPWorkValue(S,1,NULL);      //enc_raw
-    ssSetPWorkValue(S,2,NULL);      //num_encoder_per_line
-    ssSetPWorkValue(S,3,NULL);      //num_encoder_conf_total
+
+    ssSetIWorkValue(S,0,0);         //num_encoder_conf_total
 
     closeRS485(&comm_settings_t);
 }

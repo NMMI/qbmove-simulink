@@ -482,8 +482,8 @@ static void mdlStart( SimStruct *S )
     int try_counter;
     char aux_char;
     comm_settings comm_settings_t;
+    int* activation_state = (int *) calloc(NUM_OF_QBOTS, sizeof(int));
 
-    int* activation_state;
 //=============================                           Check inputs integrity 
 
     if( (params_com_direction == TX) | (params_com_direction == BOTH) ){
@@ -534,7 +534,6 @@ static void mdlStart( SimStruct *S )
         //commSetWatchDog(&comm_settings_t, qbot_id, PARAM_WDT_FCN);
     }
 
-    activation_state = (int *) calloc(NUM_OF_QBOTS, sizeof(int));
     void **PWork = ssGetPWork(S);
     
     PWork[0] = activation_state;
