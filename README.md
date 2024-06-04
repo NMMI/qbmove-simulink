@@ -1,44 +1,11 @@
 # qbmove simulink library
 
-### IMPORTANT: Versioning:
-Each of the repositories in the following table has a version number
-composed of 3 numbers in the form: **v x.y.z**
-
-|  Tools  [T]    |  Libraries [L] |  Firmware [F]            |
-|-----------------|---------------|--------------------------|
-| qbmove simulink | qbAPI         | qbmove firmware          |
-| qbadmin         |               | qbmove advanced firmware |
-|                 |               | hand firmware micro      |
-
-E.g. **xT** is the **x** number of the Tools whereas **yF** is the **y** number of the Firmware version.
-
-- Every change in the number **z** means a change in the respective repo which not implies changes in other repos.
-- Every change in the number **y** in a repo is backward compatible reading the table from right to left. This means that
-if you have some new feature in a Firmware, you can still use old Libraries and Tools for management, but of course
-you will not be able to use the new features. In this case the rule is **yF >= yL >= yT**.
-- Every change in the number **x** means a change which is not backward compatible, hence you will need to update
-everything to use it. In this case the rule is **xF = xL = xT**.
-
-Summarising
-- **z** independent
-- **yF >= yL >= yT**
-- **xF = xL = xT**
-
-E.g.
-
-| Tools          | Libraries    | Firmware               | Compatible |
-|----------------|--------------|------------------------|------------|
-| qbadmin v4.2.3 | qbAPI v4.5.0 | qbmove firmware v4.6.7 | YES        |
-| qbadmin v3.2.3 | qbAPI v4.5.0 | qbmove firmware v4.6.7 | NO         |
-| qbadmin v4.2.3 | qbAPI v4.5.7 | qbmove firmware v4.5.0 | YES        |
-
-
 ## Installation:
 
 ### Downloads
 
 To be able to correctly use these libraries, you will need to download the current APIs
-You can find them [here](https://bitbucket.org/qbrobotics/qbdevice-api).
+You can find them [here](https://github.com/NMMI/qbAPI).
 You will need to just download the qbAPI folder and save it side by side with the qbmove_simulink
 folder. Before compiling be sure to have a folder tree like that (be sure to remove the `-master` suffix):
 
@@ -54,11 +21,11 @@ folder. Before compiling be sure to have a folder tree like that (be sure to rem
 
 ### The compiler
 
-1.  First of all be sure to have a C compiler installed in your system
-    (tested with Xcode under Mac OS X and Microsoft Windows SDK for
-    Windows 7 under Windows).
-2.  Now execute the command "mex -setup" on your Matlab Command Window
-    to let Matlab use your compiler.
+1.  First of all be sure to have a C compiler installed in your system.
+    Execute the command "mex -setup" on your Matlab Command Window
+    to let Matlab use your compiler. The suggested is the "MinGW64 Compiler".
+2.  If you don't have any, install the "MATLAB Support for MinGW-w64 C/C++/Fortran Compiler" either through the
+    add-on page or following [this](https://it.mathworks.com/matlabcentral/fileexchange/52848-matlab-support-for-mingw-w64-c-c-fortran-compiler) link.
 
     If you have trouble in this step, try follow
     [this](http://www.mathworks.it/it/help/matlab/matlab_external/what-you-need-to-build-mex-files.html)
@@ -69,12 +36,7 @@ folder. Before compiling be sure to have a folder tree like that (be sure to rem
 The library can be used on various operating systems such as MacOS X,
 Windows, Linux... but you need to recompile it for your system.
 
-[WARNING:   Matlab version supported are from 2014a up to 2015b
-            Matlab bug advised, as soon as possible problem will be fixed
-            Previous Matlab versions can download: https://bitbucket.org/qbrobotics/qbmove-simulink/commits/9cd93e137cd21c2b56a822ea5e8a742032f01692
-            ]
-
-1.  Move your position in `qbmove_simulink`,type install and press return. 
+1.  Move your position in `qbmove_simulink` folder,type install and press return. 
     It will install the library depending on your MATLAB configuration and 
     set necessary path.
     If no error is returned the libraries are correctly compiled and it is
@@ -101,7 +63,7 @@ Windows, Linux... but you need to recompile it for your system.
     libraries in Simulink Library Browser. From here drag and drop the
     desired blocks onto your model.
 
-### The blocks
+### The main blocks
 
 - QB Pacer
     You need one of this block to be in your model, otherwise the
@@ -178,7 +140,7 @@ Windows, Linux... but you need to recompile it for your system.
 
 Example:
 
-In the main folder you will find an example called "qbmove_example.slx"
+In the "examples" folder you will find an example called "qbmove_basic_example.slx"
 This is a simple configuration which you can use to test your qbmove.
 On the left there are two slider gain which can be tweaked while the
 simulation is running and you can see the result on the qbmove.
@@ -204,14 +166,3 @@ and the computer should be able to run it in real time. This means that
 every 2 milliseconds you send a new reference position to the qbmove and
 the current position is read. Furthermore a current reading is done
 and you can see the milliampere absorbed by each of the two motors.
-
-### qbmove_id_utils
-
-In the library folder you will find a file called qbmove_id_utils.m
-By executing this script, a simple GUI will open and you will be able to
-set and get the ID of your qbmove.
-Before executing the GUI, connect one single qbmove to your computer with the
-USB cable. The port should be automatically retrieved by the program and you
-will be able to select it using the dropdown menu.
-Click get to read the current qbmove ID.
-Insert a new ID and click set if you want to change it.
