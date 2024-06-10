@@ -39,7 +39,7 @@ if strcmpi( gcs, 'qb_library_ISS' )
     set_param('qb_library_ISS', 'lock', 'off');
 end
 %==================================================       BLOCK BACKGROUND IMAGE
-% image( imread('qbot.jpg') );
+image( imread('motor_emg.jpg') );
 %=======================================================     TEMPORARY VARIABLES
 tmp_A_C_DIRS = get_param( gcb, 'ACTIVE_COMM_DIRECTIONS' );
 % tmp_MaskEnables = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };

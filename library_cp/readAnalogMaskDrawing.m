@@ -39,7 +39,7 @@ if strcmpi( gcs, 'qb_library_ISS' )
     set_param('qb_library_ISS', 'lock', 'off');
 end
 %==================================================       BLOCK BACKGROUND IMAGE
-% image( imread('qbot.jpg') );
+image( imread('analog.jpg') );
 %=======================================================     TEMPORARY VARIABLES
 % tmp_MaskEnables = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };
 % tmp_MaskVisibilities = { 'on'; 'on'; 'off'; 'on'; 'on'; 'off'; 'off' };

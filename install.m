@@ -1,6 +1,7 @@
 %% BSD 3-Clause License
 %
 % Copyright (c) 2015-2018, qbrobotics
+% Copyright (c) 2018-2024, Centro di Ricerca "E. Piaggio"
 % All rights reserved.
 %
 % Redistribution and use in source and binary forms, with or without
@@ -37,17 +38,18 @@ clear all
 clc
 % Install library
 
+wb = waitbar(0, 'Please wait...', 'Name', 'Installing Simulink libraries');
+pause(.2);
 cd library
+waitbar(.33, wb, 'Compiling QB Move library');
 make
 cd ..
 
 cd library_cp
+waitbar(.67, wb, 'Compiling Centro Piaggio library');
 make
 cd ..
 
-
-% Load last version available
-last_version_flag = false;
 
 % LIBRARY UPDATE
 
@@ -61,24 +63,10 @@ ver = version('-release');
 old_file = strcat('', lib);
 old_file = strcat(old_file, 'vers/qbmove_library_');
 old_file = strcat(old_file, ver);
+old_file = strcat(old_file, '.slx');
 
 new_file = strcat('', lib);
-new_file = strcat(new_file, 'qbmove_library');
-
-if ( (str2double(ver(1:end-1)) >= 2013) || ( str2double(ver(1:end-1)) == 2012 && (ver(end) == 'b') ) )
-    old_file = strcat(old_file, '.slx');
-    new_file = strcat(new_file, '.slx');
-    
-    if ~exist(old_file, 'file')
-        last_version_flag = true;
-        old_file = strcat('library/vers/qbmove_library_', num2str(last_version));
-        old_file = strcat(old_file, last_release);
-        old_file = strcat(old_file, '.slx');
-    end    
-else
-    old_file = strcat(old_file, '.mdl');
-    new_file = strcat(new_file, '.mdl');
-end
+new_file = strcat(new_file, 'qbmove_library.slx');
 
 copyfile(old_file, new_file);
 
@@ -90,25 +78,10 @@ new_file = '';
 old_file = strcat('', lib_pac);
 old_file = strcat(old_file, 'vers/QB_pacer_lib_');
 old_file = strcat(old_file, ver);
+old_file = strcat(old_file, '.slx');
 
 new_file = strcat('', lib_pac);
-new_file = strcat(new_file, 'QB_pacer_lib');
-
-    
-if ( (str2double(ver(1:end-1)) >= 2013) || ( str2double(ver(1:end-1)) == 2012 && (ver(end) == 'b') ) )
-    old_file = strcat(old_file, '.slx');
-    new_file = strcat(new_file, '.slx');
-    
-    if ~exist(old_file, 'file')
-        last_version_flag = true;
-        old_file = strcat('library_pacer/vers/QB_pacer_lib_', num2str(last_version));
-        old_file = strcat(old_file, last_release);
-        old_file = strcat(old_file, '.slx');
-    end
-else
-    old_file = strcat(old_file, '.mdl');
-    new_file = strcat(new_file, '.mdl');
-end
+new_file = strcat(new_file, 'QB_pacer_lib.slx');
 
 copyfile(old_file, new_file);
 
@@ -120,31 +93,19 @@ new_file = '';
 old_file = strcat('', lib_cp);
 old_file = strcat(old_file, 'vers/CP_library_');
 old_file = strcat(old_file, ver);
+old_file = strcat(old_file, '.slx');
 
 new_file = strcat('', lib_cp);
-new_file = strcat(new_file, 'CP_library');
-
-if ( (str2double(ver(1:end-1)) >= 2013) )
-    old_file = strcat(old_file, '.slx');
-    new_file = strcat(new_file, '.slx');
-    
-    if ~exist(old_file, 'file')
-        last_version_flag = true;
-        old_file = strcat('library/vers/CP_library_', num2str(last_version));
-        old_file = strcat(old_file, last_release);
-        old_file = strcat(old_file, '.slx');
-    end    
-else
-    old_file = strcat(old_file, '.mdl');
-    new_file = strcat(new_file, '.mdl');
-end
+new_file = strcat(new_file, 'CP_library.slx');
 
 copyfile(old_file, new_file,'f');
 
 old_file = '';
 new_file = '';
 
+
 % Add path to Set Path field (only for libraries)
+waitbar(.85, wb, 'Updating Matlab Search Path');
 cd library
 path(genpath(cd), path);
 cd ..
@@ -158,29 +119,49 @@ clc
 
 flag_path = savepath;
 
+
+if flag_path
+    disp('[WARN] Matlab was not able to update search path file.');
+    disp('[WARN] Make sure write permissions are granted and try again.');
+    c = input(['Press ''q'' to quit. Instead, if you want to use an ' ...
+        'alternative path press ''c'' to continue: '], 's');
+end
 while flag_path
-    alternative_path = input('Chose an alternative path for pathdef.m file (without end slash): ', 's');
+    if (c == 'c')
+        while flag_path
+    alternative_path = input(['Choose an alternative path for pathdef.m ' ...
+        'file (without ending slash): '], 's');
     
-    if exist(alternative_path,'dir')
-    
-        alternative_path = strcat(alternative_path, '/pathdef.m');
-
-        flag_path = savepath(alternative_path);
-
-        if (flag_path)
-            disp(['[ERROR] Path not correct. ' alternative_path]);
+            if exist(alternative_path,'dir')
+            
+                alternative_path = strcat(alternative_path, '/pathdef.m');
+        
+                flag_path = savepath(alternative_path);
+        
+                if (flag_path)
+                    disp(['[ERROR] Path not correct: ' alternative_path]);
+                end
+            else
+                disp(['[ERROR] This is not a directory: ' alternative_path]);
+            end
         end
+    elseif (c == 'q')
+        disp('[INFO] QBmove and CP libraries NOT installed');
+        disp(['[INFO] Search path update failed. Run this script again ' ...
+            'with the right permissions.']);
+        close(wb);
+        return
     else
-        disp(['[ERROR] This is not a directory. ' alternative_path]);
-    end
+        c = input('Bad choice. Press ''q'' to quit or ''c'' to continue: ', 's');
+    end 
 end
 
-
-if last_version_flag
-    display('[WARNING] MATLAB version is not supported, last version available set.')
-end
-
-display('[INFO] QBmove and CP libraries installed successfully');
+waitbar(1, wb, 'Finishing');
+pause(.2);
+close(wb);
+disp('[INFO] QBmove and Centro Piaggio libraries installed successfully.');
+disp('[INFO] All the blocksets are now available in the Simulink Library Browser.');
+disp('[INFO] Check out the examples folder to know how to use them.');
 
 clear all
 
