@@ -36,7 +36,7 @@ folder. Before compiling be sure to have a folder tree like that (be sure to rem
 The library can be used on various operating systems such as MacOS X,
 Windows, Linux... but you need to recompile it for your system.
 
-1.  Move your position in `qbmove_simulink` folder,type install and press return. 
+1.  Move your position in `qbmove-simulink` folder, type install and press return. 
     It will install the library depending on your MATLAB configuration and 
     set necessary path.
     If no error is returned the libraries are correctly compiled and it is
@@ -55,7 +55,7 @@ Windows, Linux... but you need to recompile it for your system.
     delta_t in seconds. (e.g. if you want to retrieve positions and set new
     inputs every 5 milliseconds, type 0.005). Click "OK".
 
-    > Every qbvmove needs at least 1 millisecond to read and set new
+    > Every qbmove needs at least 1 millisecond to read and set new
     > positions, so the minimum step time allowed is 1 millisecond multiplied
     > by the number of qbmoves in the chain.
 
@@ -68,7 +68,7 @@ Windows, Linux... but you need to recompile it for your system.
 - QB Pacer
     You need one of this block to be in your model, otherwise the
     simulation time will not match the *real time*.
-    You can set a number representing the **simulation time** **real time**
+    You can set a number representing the **simulation time** / **real time**
     ratio. Leave it set to 1 for normal use.
 
 - QB Move
@@ -105,7 +105,7 @@ Windows, Linux... but you need to recompile it for your system.
         COM2, COM#...).
 
         > If your qbmove is not automatically recognized by windows, try to
-        > manually install the FTDI drivers from [here](http://www.ftdichip.com/Drivers/VCP.htm)
+        > manually install the FTDI drivers from [here](http://www.ftdichip.com/Drivers/VCP.htm). Look for the setup executable in the _Comments_ column on the right
 
         You need to modify the port number to allow simulink using it.
         Click on START and type Device Manager.
